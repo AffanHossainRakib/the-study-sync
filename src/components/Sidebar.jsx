@@ -72,7 +72,7 @@ const Sidebar = () => {
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { href: "/my-plans", label: "My Plans", icon: FolderOpen },
     { href: "/instances", label: "My Instances", icon: Play },
-    { href: "/plans", label: "All Public Plans", icon: GraduationCap },
+    { href: "/plans", label: "All Plans", icon: GraduationCap },
     { href: "/lab-finder", label: "Lab Finder", icon: Monitor },
     { href: "/create-plan", label: "Create New Plan", icon: Plus },
     { href: "/reviews", label: "Add Review", icon: Star },
