@@ -14,15 +14,15 @@ export default function manifest() {
     dir: "ltr",
     icons: [
       {
-        src: "/icon.png",
-        sizes: "192x192",
-        type: "image/png",
+        src: "/favicon.ico",
+        sizes: "any",
+        type: "image/x-icon",
         purpose: "maskable any",
       },
       {
-        src: "/icon.png",
-        sizes: "512x512",
-        type: "image/png",
+        src: "/favicon.ico",
+        sizes: "any",
+        type: "image/x-icon",
         purpose: "maskable any",
       },
     ],
