@@ -63,7 +63,7 @@ export async function generateMetadata({ params }) {
         type: "article",
         images: [
           {
-            url: "/og-image.png",
+            url: "/screenshot-1.png",
             width: 1200,
             height: 630,
             alt: "The Study Sync - Collaborative Study Plan Manager",
@@ -74,7 +74,7 @@ export async function generateMetadata({ params }) {
         card: "summary_large_image",
         title: planTitle,
         description,
-        images: ["/og-image.png"],
+        images: ["/screenshot-1.png"],
       },
     };
   } catch (error) {
