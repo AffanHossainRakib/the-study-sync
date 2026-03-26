@@ -3,6 +3,8 @@
  * Helper functions for making authenticated API calls to the backend
  */
 
+import { auth } from "@/lib/firebase";
+
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000/";
 
@@ -15,33 +17,80 @@ const API_BASE_URL =
  * @returns {Promise<object>} Response data
  */
 async function apiRequest(endpoint, method = "GET", token = null, body = null) {
-  const headers = {
-    "Content-Type": "application/json",
-  };
+  const buildOptions = (authToken) => {
+    const headers = {
+      "Content-Type": "application/json",
+    };
 
-  if (token) {
-    headers["Authorization"] = `Bearer ${token}`;
-    // console.log('Sending token:', token ? 'Yes' : 'No');
-  }
-
-  const options = {
-    method,
-    headers,
-  };
-
-  if (body && (method === "POST" || method === "PUT")) {
-    options.body = JSON.stringify(body);
-  }
-
-  try {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, options);
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || error.error || "API request failed");
+    if (authToken) {
+      headers["Authorization"] = `Bearer ${authToken}`;
     }
 
-    return await response.json();
+    const options = {
+      method,
+      headers,
+    };
+
+    if (body && (method === "POST" || method === "PUT")) {
+      options.body = JSON.stringify(body);
+    }
+
+    return options;
+  };
+
+  const parseErrorResponse = async (response) => {
+    try {
+      return await response.json();
+    } catch {
+      return { error: "API request failed" };
+    }
+  };
+
+  const refreshAuthToken = async () => {
+    if (typeof window === "undefined" || !auth.currentUser) return null;
+
+    try {
+      const refreshedToken = await auth.currentUser.getIdToken(true);
+      document.cookie = `auth-token=${refreshedToken}; path=/; max-age=3600; SameSite=Lax`;
+      return refreshedToken;
+    } catch (refreshError) {
+      console.error("Token refresh during API retry failed:", refreshError);
+      return null;
+    }
+  };
+
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}${endpoint}`,
+      buildOptions(token),
+    );
+
+    if (response.ok) {
+      return await response.json();
+    }
+
+    // Retry once on auth failure with a force-refreshed token.
+    if (response.status === 401 && token) {
+      const refreshedToken = await refreshAuthToken();
+      if (refreshedToken && refreshedToken !== token) {
+        const retryResponse = await fetch(
+          `${API_BASE_URL}${endpoint}`,
+          buildOptions(refreshedToken),
+        );
+
+        if (retryResponse.ok) {
+          return await retryResponse.json();
+        }
+
+        const retryError = await parseErrorResponse(retryResponse);
+        throw new Error(
+          retryError.message || retryError.error || "API request failed",
+        );
+      }
+    }
+
+    const error = await parseErrorResponse(response);
+    throw new Error(error.message || error.error || "API request failed");
   } catch (error) {
     console.error(`API Error [${method} ${endpoint}]:`, error);
     throw error;
@@ -93,7 +142,7 @@ export const removeCollaborator = async (id, userId, token) => {
   return apiRequest(
     `/api/study-plans/${id}/collaborators/${userId}`,
     "DELETE",
-    token
+    token,
   );
 };
 
@@ -150,7 +199,7 @@ export const toggleResourceCompletion = async (
   instanceId,
   resourceId,
   completed,
-  token
+  token,
 ) => {
   return apiRequest("/api/user-progress", "POST", token, {
     instanceId,
@@ -173,7 +222,7 @@ export const checkResourcesCompletion = async (resourceIds, token) => {
   return apiRequest(
     `/api/user-progress/check?resourceIds=${idsParam}`,
     "GET",
-    token
+    token,
   );
 };
 

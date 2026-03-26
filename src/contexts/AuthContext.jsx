@@ -7,7 +7,7 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
   signOut as firebaseSignOut,
-  onAuthStateChanged,
+  onIdTokenChanged,
   updateProfile,
 } from "firebase/auth";
 import { auth } from "@/lib/firebase";
@@ -29,7 +29,7 @@ export const AuthProvider = ({ children }) => {
 
   // Initialize auth state listener
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+    const unsubscribe = onIdTokenChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         // Get ID token for API calls
         const idToken = await firebaseUser.getIdToken();
@@ -52,7 +52,7 @@ export const AuthProvider = ({ children }) => {
             console.error(
               "Failed to fetch user profile:",
               res.status,
-              errorText
+              errorText,
             );
             setUser(firebaseUser);
           }
@@ -78,7 +78,7 @@ export const AuthProvider = ({ children }) => {
       const userCredential = await createUserWithEmailAndPassword(
         auth,
         email,
-        password
+        password,
       );
 
       // Update display name
@@ -99,7 +99,7 @@ export const AuthProvider = ({ children }) => {
       const userCredential = await signInWithEmailAndPassword(
         auth,
         email,
-        password
+        password,
       );
 
       return { user: userCredential.user, error: null };
@@ -139,10 +139,11 @@ export const AuthProvider = ({ children }) => {
 
   // Refresh token
   const refreshToken = async () => {
-    if (user) {
+    if (auth.currentUser) {
       try {
-        const idToken = await user.getIdToken(true); // Force refresh
+        const idToken = await auth.currentUser.getIdToken(true); // Force refresh
         setToken(idToken);
+        document.cookie = `auth-token=${idToken}; path=/; max-age=3600; SameSite=Lax`;
         return idToken;
       } catch (error) {
         console.error("Token refresh error:", error);

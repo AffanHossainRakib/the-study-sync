@@ -165,6 +165,7 @@ export default function InstanceDetailsPage() {
   const [savingNotes, setSavingNotes] = useState(false);
   const [theaterMode, setTheaterMode] = useState(false);
   const saveNotesTimeoutRef = useRef(null);
+  const autoCompletingResourcesRef = useRef(new Set());
 
   // Edit mode states
   const [isEditMode, setIsEditMode] = useState(false);
@@ -224,67 +225,49 @@ export default function InstanceDetailsPage() {
     }
   }, [instance?.resources, selectedResourceId]);
 
-  // Save notes to database with debouncing
-  const saveResourceNote = useCallback(
-    (resourceId, note) => {
-      const newNotes = { ...resourceNotes, [resourceId]: note };
-      setResourceNotes(newNotes);
+  const fetchInstanceDetails = useCallback(async () => {
+    if (!params.id || !token) return;
 
-      if (saveNotesTimeoutRef.current) {
-        clearTimeout(saveNotesTimeoutRef.current);
-      }
-
-      saveNotesTimeoutRef.current = setTimeout(async () => {
-        if (!instance?._id || !token) return;
-
-        try {
-          setSavingNotes(true);
-          await saveResourceNotes(instance._id, newNotes, token);
-        } catch (error) {
-          console.error("Error saving notes:", error);
-          toast.error("Failed to save notes");
-        } finally {
-          setSavingNotes(false);
-        }
-      }, 1000);
-    },
-    [resourceNotes, instance?._id, token],
-  );
+    try {
+      setLoading(true);
+      const data = await getInstanceById(params.id, token);
+      setInstance(data);
+    } catch (error) {
+      console.error("Error fetching instance:", error);
+      toast.error("Failed to load instance");
+    } finally {
+      setLoading(false);
+    }
+  }, [params.id, token]);
 
   // Handle playing next resource
-  const handlePlayNext = useCallback(() => {
-    if (!instance?.resources || !selectedResourceId) return;
+  const handlePlayNext = useCallback(
+    (completedResourceId) => {
+      if (!instance?.resources) return;
 
-    const currentIndex = instance.resources.findIndex(
-      (r) => r._id === selectedResourceId,
-    );
-    if (currentIndex < instance.resources.length - 1) {
-      setSelectedResourceId(instance.resources[currentIndex + 1]._id);
-    }
-  }, [instance?.resources, selectedResourceId]);
+      const currentResourceId = completedResourceId || selectedResourceId;
+      if (!currentResourceId) return;
+
+      const currentIndex = instance.resources.findIndex(
+        (r) => r._id === currentResourceId,
+      );
+      if (currentIndex < instance.resources.length - 1) {
+        setSelectedResourceId(instance.resources[currentIndex + 1]._id);
+      }
+    },
+    [instance?.resources, selectedResourceId],
+  );
 
   useEffect(() => {
-    const fetchInstanceDetails = async () => {
-      try {
-        setLoading(true);
-        const data = await getInstanceById(params.id, token);
-        setInstance(data);
-      } catch (error) {
-        console.error("Error fetching instance:", error);
-        toast.error("Failed to load instance");
-      } finally {
-        setLoading(false);
-      }
-    };
     if (authLoading) return;
     if (!user) {
       router.push("/login");
       return;
     }
-    if (params.id) {
+    if (params.id && token) {
       fetchInstanceDetails();
     }
-  }, [params.id, user, token, authLoading, router]);
+  }, [params.id, user, token, authLoading, router, fetchInstanceDetails]);
 
   const handleToggleComplete = async (resourceId, currentStatus) => {
     try {
@@ -642,10 +625,33 @@ export default function InstanceDetailsPage() {
                     isExpanded={true}
                     theaterMode={theaterMode}
                     onClose={() => {}}
-                    onComplete={() => {
-                      if (!selectedResource.completed) {
-                        handleToggleComplete(selectedResource._id, false);
+                    onComplete={(completedResourceId) => {
+                      if (!completedResourceId || !instance?.resources) return;
+
+                      const completedResource = instance.resources.find(
+                        (resource) => resource._id === completedResourceId,
+                      );
+
+                      if (
+                        !completedResource ||
+                        completedResource.completed ||
+                        autoCompletingResourcesRef.current.has(
+                          completedResourceId,
+                        )
+                      ) {
+                        return;
                       }
+
+                      autoCompletingResourcesRef.current.add(
+                        completedResourceId,
+                      );
+                      handleToggleComplete(completedResourceId, false).finally(
+                        () => {
+                          autoCompletingResourcesRef.current.delete(
+                            completedResourceId,
+                          );
+                        },
+                      );
                     }}
                     onPlayNext={handlePlayNext}
                   />
