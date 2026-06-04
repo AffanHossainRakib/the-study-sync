@@ -92,10 +92,10 @@ export default function InstanceDetailsPage() {
       <div
         ref={setNodeRef}
         style={style}
-        className={`flex items-center gap-2 p-3 border-b border-slate-100 dark:border-slate-800 ${
+        className={`flex items-center gap-2 p-3 border-b border-border ${
           isDragging
-            ? "bg-blue-50 dark:bg-blue-900/20 shadow-lg z-50"
-            : "bg-white dark:bg-slate-900"
+            ? "bg-accent shadow-lg z-50"
+            : "bg-card"
         }`}
       >
         {/* Drag Handle */}
@@ -104,7 +104,7 @@ export default function InstanceDetailsPage() {
           {...listeners}
           className="cursor-grab active:cursor-grabbing touch-none"
         >
-          <GripVertical className="h-5 w-5 text-slate-400" />
+          <GripVertical className="h-5 w-5 text-muted-foreground" />
         </div>
 
         {/* Icon */}
@@ -134,10 +134,10 @@ export default function InstanceDetailsPage() {
             type="text"
             value={editedCustomTitles[resource._id] ?? resource.title}
             onChange={(e) => handleTitleChange(resource._id, e.target.value)}
-            className="w-full bg-transparent text-sm font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-1 py-0.5"
+            className="w-full bg-transparent text-sm font-medium text-foreground focus:outline-none focus:ring-1 focus:ring-ring rounded px-1 py-0.5"
             placeholder="Resource title"
           />
-          <div className="text-xs text-slate-500 mt-0.5">
+          <div className="text-xs text-muted-foreground mt-0.5">
             {typeInfo.label} • {formatTime(totalTime)}
           </div>
         </div>
@@ -145,7 +145,7 @@ export default function InstanceDetailsPage() {
         {/* Delete Button */}
         <button
           onClick={() => handleDeleteResource(resource._id)}
-          className="p-1.5 rounded hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 transition-colors"
+          className="p-1.5 rounded hover:bg-destructive/10 text-destructive transition-colors"
           title="Remove resource"
         >
           <Trash2 className="h-4 w-4" />
@@ -493,17 +493,17 @@ export default function InstanceDetailsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-linear-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-slate-950 dark:via-purple-950 dark:to-slate-950 py-8">
+      <div className="min-h-screen bg-linear-to-br from-background via-primary/5 to-background py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="animate-pulse">
-            <div className="h-8 bg-slate-200 dark:bg-slate-800 rounded w-1/4 mb-6" />
+            <div className="h-8 bg-muted rounded w-1/4 mb-6" />
             <div className="flex gap-6">
               <div className="flex-1">
-                <div className="aspect-video bg-slate-200 dark:bg-slate-800 rounded-xl mb-4" />
-                <div className="h-6 bg-slate-200 dark:bg-slate-800 rounded w-3/4 mb-2" />
+                <div className="aspect-video bg-muted rounded-xl mb-4" />
+                <div className="h-6 bg-muted rounded w-3/4 mb-2" />
               </div>
               <div className="w-80 hidden lg:block">
-                <div className="h-96 bg-slate-200 dark:bg-slate-800 rounded-xl" />
+                <div className="h-96 bg-muted rounded-xl" />
               </div>
             </div>
           </div>
@@ -517,27 +517,27 @@ export default function InstanceDetailsPage() {
   const progressPercent = instance.resourcePercent || 0;
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-100 via-slate-50 to-white dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+    <div className="min-h-screen bg-linear-to-br from-background via-primary/5 to-background">
       {/* Top Bar */}
-      <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm border-b border-slate-200 dark:border-slate-800 sticky top-16 z-30">
+      <div className="bg-card/80 backdrop-blur-sm border-b border-border sticky top-16 z-30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-3 min-w-0">
               <Link
                 href="/instances"
-                className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0"
+                className="p-2 rounded-lg hover:bg-muted transition-colors shrink-0"
               >
-                <ArrowLeft className="h-5 w-5 text-slate-600 dark:text-slate-400" />
+                <ArrowLeft className="h-5 w-5 text-muted-foreground" />
               </Link>
               <div className="min-w-0">
-                <h1 className="text-lg font-bold text-slate-900 dark:text-white truncate">
+                <h1 className="text-lg font-bold text-foreground truncate">
                   {instance.studyPlanId?.courseCode &&
                     `${instance.studyPlanId.courseCode} - `}
                   {instance.customTitle ||
                     instance.studyPlanId?.title ||
                     "Untitled"}
                 </h1>
-                <div className="flex items-center gap-2 text-xs text-slate-500">
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
                   <span>
                     {instance.completedResources || 0}/
                     {instance.totalResources || 0} completed
@@ -553,7 +553,7 @@ export default function InstanceDetailsPage() {
                   <button
                     onClick={handleSaveChanges}
                     disabled={saving}
-                    className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
+                    className="flex items-center gap-2 px-4 py-2 bg-success text-success-foreground rounded-lg hover:bg-success/90 transition-colors disabled:opacity-50"
                     title="Save changes"
                   >
                     <Save className="h-4 w-4" />
@@ -562,7 +562,7 @@ export default function InstanceDetailsPage() {
                   <button
                     onClick={handleToggleEditMode}
                     disabled={saving}
-                    className="px-4 py-2 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors"
+                    className="px-4 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/80 transition-colors"
                     title="Cancel"
                   >
                     Cancel
@@ -570,12 +570,12 @@ export default function InstanceDetailsPage() {
                 </>
               ) : (
                 <>
-                  <span className="text-xs text-slate-500">
+                  <span className="text-xs text-muted-foreground">
                     Click Edit to edit the instance
                   </span>
                   <button
                     onClick={handleToggleEditMode}
-                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
                     title="Edit mode"
                   >
                     <Edit className="h-4 w-4" />
@@ -583,19 +583,19 @@ export default function InstanceDetailsPage() {
                   </button>
                   {/* <button
                     onClick={() => setIsEditModalOpen(true)}
-                    className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                    className="p-2 rounded-lg hover:bg-muted transition-colors"
                     title="Edit instance details"
                   >
-                    <Info className="h-5 w-5 text-slate-600 dark:text-slate-400" />
+                    <Info className="h-5 w-5 text-muted-foreground" />
                   </button> */}
                 </>
               )}
             </div>
           </div>
           {/* Progress bar */}
-          <div className="mt-2 h-1 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+          <div className="mt-2 h-1 bg-muted rounded-full overflow-hidden">
             <div
-              className="h-full bg-linear-to-r from-blue-500 to-purple-500 transition-all duration-500"
+              className="h-full bg-linear-to-r from-primary to-info transition-all duration-500"
               style={{ width: `${progressPercent}%` }}
             />
           </div>
@@ -661,7 +661,7 @@ export default function InstanceDetailsPage() {
                 <div className="flex justify-end mt-2">
                   <button
                     onClick={() => setTheaterMode(!theaterMode)}
-                    className="hidden md:inline-flex items-center gap-2 px-3 py-1.5 text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+                    className="hidden md:inline-flex items-center gap-2 px-3 py-1.5 text-sm text-muted-foreground hover:bg-muted rounded-lg transition-colors"
                     title={
                       theaterMode ? "Exit theater mode (T)" : "Theater mode (T)"
                     }
@@ -679,9 +679,9 @@ export default function InstanceDetailsPage() {
                 </div>
 
                 {/* Video Info */}
-                <div className="mt-4 bg-white dark:bg-slate-900 rounded-xl p-4 shadow-lg border border-slate-200 dark:border-slate-800">
+                <div className="mt-4 bg-card rounded-xl p-4 shadow-lg border border-border">
                   {/* Title - Full width */}
-                  <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-3">
+                  <h2 className="text-xl font-bold text-foreground mb-3">
                     {selectedIndex + 1}. {selectedResource.title}
                   </h2>
 
@@ -699,7 +699,7 @@ export default function InstanceDetailsPage() {
                       >
                         {getResourceTypeInfo(selectedResource.type).label}
                       </span>
-                      <span className="flex items-center gap-1 text-slate-500">
+                      <span className="flex items-center gap-1 text-muted-foreground">
                         <Clock className="h-4 w-4" />
                         {formatTime(
                           selectedResource.type === "youtube-video"
@@ -711,7 +711,7 @@ export default function InstanceDetailsPage() {
                         )}
                       </span>
                       {selectedResource.completed && (
-                        <span className="flex items-center gap-1 text-green-600 dark:text-green-400">
+                        <span className="flex items-center gap-1 text-success">
                           <CheckCircle2 className="h-4 w-4" />
                           Completed
                         </span>
@@ -719,15 +719,15 @@ export default function InstanceDetailsPage() {
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="flex items-center gap-1 group relative">
-                        <span className="hidden md:block text-xs text-slate-500 font-medium">
+                        <span className="hidden md:block text-xs text-muted-foreground font-medium">
                           Take Notes
                         </span>
                         <button
                           onClick={() => setShowNotes(!showNotes)}
                           className={`p-2 rounded-lg transition-all ${
                             showNotes || resourceNotes[selectedResource._id]
-                              ? "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600"
-                              : "bg-slate-100 dark:bg-slate-800 text-slate-500 hover:bg-slate-200"
+                              ? "bg-warning/15 text-warning-foreground"
+                              : "bg-muted text-muted-foreground hover:bg-muted/80"
                           }`}
                           title="Toggle notes"
                         >
@@ -745,8 +745,8 @@ export default function InstanceDetailsPage() {
                         disabled={togglingResource === selectedResource._id}
                         className={`px-4 py-2 rounded-lg font-medium transition-all ${
                           selectedResource.completed
-                            ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300"
-                            : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
+                            ? "bg-success/15 text-success"
+                            : "bg-muted text-foreground hover:bg-muted/80"
                         }`}
                       >
                         {selectedResource.completed
@@ -759,7 +759,7 @@ export default function InstanceDetailsPage() {
                           href={selectedResource.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+                          className="p-2 rounded-lg bg-muted text-muted-foreground hover:bg-muted/80 transition-colors"
                           title="Open in new tab"
                         >
                           <ExternalLink className="h-5 w-5" />
@@ -770,8 +770,8 @@ export default function InstanceDetailsPage() {
 
                   {/* Notes Section */}
                   {showNotes && (
-                    <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
-                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                    <div className="mt-4 pt-4 border-t border-border">
+                      <label className="block text-sm font-medium text-foreground mb-2">
                         Your Notes
                       </label>
                       <textarea
@@ -780,13 +780,13 @@ export default function InstanceDetailsPage() {
                         onChange={(e) =>
                           saveResourceNote(selectedResource._id, e.target.value)
                         }
-                        className="w-full p-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 text-sm resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full p-3 rounded-lg border border-border bg-muted text-foreground placeholder:text-muted-foreground text-sm resize-none focus:ring-2 focus:ring-ring focus:border-transparent"
                         rows={4}
                       />
-                      <div className="flex items-center justify-between mt-1 text-xs text-slate-400">
+                      <div className="flex items-center justify-between mt-1 text-xs text-muted-foreground">
                         <span>Auto-saved • Synced across devices</span>
                         {savingNotes && (
-                          <span className="text-blue-500">Saving...</span>
+                          <span className="text-primary">Saving...</span>
                         )}
                       </div>
                     </div>
@@ -794,8 +794,8 @@ export default function InstanceDetailsPage() {
                 </div>
               </>
             ) : (
-              <div className="aspect-video bg-slate-200 dark:bg-slate-800 rounded-xl flex items-center justify-center">
-                <p className="text-slate-500">Select a resource to play</p>
+              <div className="aspect-video bg-muted rounded-xl flex items-center justify-center">
+                <p className="text-muted-foreground">Select a resource to play</p>
               </div>
             )}
           </div>
@@ -803,19 +803,19 @@ export default function InstanceDetailsPage() {
           {/* Right: Playlist Sidebar */}
           {!theaterMode && (
             <div className="w-full lg:w-96 shrink-0">
-              <div className="bg-white dark:bg-slate-900 rounded-xl shadow-lg border border-slate-200 dark:border-slate-800 overflow-hidden sticky top-36">
+              <div className="bg-card rounded-xl shadow-lg border border-border overflow-hidden sticky top-36">
                 {/* Playlist Header */}
-                <div className="p-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50">
+                <div className="p-4 border-b border-border bg-muted/50">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="font-bold text-slate-900 dark:text-white">
+                      <h3 className="font-bold text-foreground">
                         {isEditMode ? "Edit Resources" : "Playlist"} •{" "}
                         {(isEditMode ? editedResources : instance.resources)
                           ?.length || 0}{" "}
                         items
                       </h3>
                       {!isEditMode && (
-                        <div className="flex items-center gap-2 mt-1 text-xs text-slate-500">
+                        <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
                           <span>
                             {instance.completedResources || 0} completed
                           </span>
@@ -827,7 +827,7 @@ export default function InstanceDetailsPage() {
                       )}
 
                       {isEditMode && (
-                        <div className="mt-2 p-2 bg-blue-50 dark:bg-blue-900/20 rounded text-xs text-blue-700 dark:text-blue-300 space-y-1">
+                        <div className="mt-2 p-2 bg-accent rounded text-xs text-accent-foreground space-y-1">
                           <div className="flex items-center gap-2">
                             <Edit className="h-3 w-3" />
                             <span>Click on the title to rename</span>
@@ -850,7 +850,7 @@ export default function InstanceDetailsPage() {
                     {isEditMode && (
                       <button
                         onClick={handleAddResource}
-                        className="flex items-center gap-1 px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
+                        className="flex items-center gap-1 px-3 py-1.5 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-sm"
                         title="Add resource"
                       >
                         <Plus className="h-6 w-6" />
@@ -900,18 +900,18 @@ export default function InstanceDetailsPage() {
                         <button
                           key={resource._id}
                           onClick={() => setSelectedResourceId(resource._id)}
-                          className={`w-full flex items-start gap-3 p-3 text-left transition-all hover:bg-slate-50 dark:hover:bg-slate-800/50 ${
+                          className={`w-full flex items-start gap-3 p-3 text-left transition-all hover:bg-muted/50 ${
                             isSelected
-                              ? "bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500"
+                              ? "bg-accent border-l-4 border-primary"
                               : "border-l-4 border-transparent"
                           }`}
                         >
                           {/* Playing indicator or index */}
                           <div className="w-6 shrink-0 flex items-center justify-center">
                             {isSelected ? (
-                              <Play className="h-4 w-4 text-blue-600 dark:text-blue-400 fill-current" />
+                              <Play className="h-4 w-4 text-primary fill-current" />
                             ) : (
-                              <span className="text-xs text-slate-400 font-medium">
+                              <span className="text-xs text-muted-foreground font-medium">
                                 {index + 1}
                               </span>
                             )}
@@ -943,16 +943,16 @@ export default function InstanceDetailsPage() {
                             <h4
                               className={`text-sm font-medium truncate ${
                                 isCompleted
-                                  ? "text-slate-400 line-through"
-                                  : "text-slate-900 dark:text-white"
+                                  ? "text-muted-foreground line-through"
+                                  : "text-foreground"
                               }`}
                             >
                               {resource.title}
                             </h4>
-                            <div className="flex items-center gap-2 text-xs text-slate-500 mt-0.5">
+                            <div className="flex items-center gap-2 text-xs text-muted-foreground mt-0.5">
                               <span>{formatTime(totalTime)}</span>
                               {resourceNotes[resource._id] && (
-                                <StickyNote className="h-3 w-3 text-yellow-500" />
+                                <StickyNote className="h-3 w-3 text-warning" />
                               )}
                             </div>
                           </div>
@@ -960,9 +960,9 @@ export default function InstanceDetailsPage() {
                           {/* Completion Status */}
                           <div className="shrink-0">
                             {isCompleted ? (
-                              <CheckCircle2 className="h-5 w-5 text-green-500" />
+                              <CheckCircle2 className="h-5 w-5 text-success" />
                             ) : (
-                              <Circle className="h-5 w-5 text-slate-300 dark:text-slate-600" />
+                              <Circle className="h-5 w-5 text-muted-foreground" />
                             )}
                           </div>
                         </button>
@@ -977,12 +977,12 @@ export default function InstanceDetailsPage() {
           {/* Theater Mode: Playlist Strip Below */}
           {theaterMode && (
             <div className="w-full mt-4">
-              <div className="bg-white dark:bg-slate-900 rounded-xl shadow-lg border border-slate-200 dark:border-slate-800 overflow-hidden">
-                <div className="p-3 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 flex items-center justify-between">
-                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+              <div className="bg-card rounded-xl shadow-lg border border-border overflow-hidden">
+                <div className="p-3 border-b border-border bg-muted/50 flex items-center justify-between">
+                  <span className="text-sm font-medium text-foreground">
                     Up Next • {instance.resources?.length || 0} items
                   </span>
-                  <span className="text-xs text-slate-500">
+                  <span className="text-xs text-muted-foreground">
                     {instance.completedResources || 0}/
                     {instance.totalResources || 0} completed
                   </span>
@@ -1006,15 +1006,15 @@ export default function InstanceDetailsPage() {
                       <button
                         key={resource._id}
                         onClick={() => setSelectedResourceId(resource._id)}
-                        className={`w-full flex items-center gap-3 px-4 py-2.5 text-left transition-all hover:bg-slate-50 dark:hover:bg-slate-800/50 border-b border-slate-100 dark:border-slate-800 last:border-b-0 ${
+                        className={`w-full flex items-center gap-3 px-4 py-2.5 text-left transition-all hover:bg-muted/50 border-b border-border last:border-b-0 ${
                           isSelected
-                            ? "bg-blue-50 dark:bg-blue-900/20 border-l-4 border-l-blue-500"
+                            ? "bg-accent border-l-4 border-l-primary"
                             : "border-l-4 border-l-transparent"
                         }`}
                       >
-                        <span className="w-6 text-center text-xs text-slate-400 font-medium">
+                        <span className="w-6 text-center text-xs text-muted-foreground font-medium">
                           {isSelected ? (
-                            <Play className="h-4 w-4 text-blue-600 fill-current mx-auto" />
+                            <Play className="h-4 w-4 text-primary fill-current mx-auto" />
                           ) : (
                             index + 1
                           )}
@@ -1038,18 +1038,18 @@ export default function InstanceDetailsPage() {
                           <span
                             className={`text-sm font-medium truncate block ${
                               isCompleted
-                                ? "text-slate-400 line-through"
-                                : "text-slate-700 dark:text-slate-300"
+                                ? "text-muted-foreground line-through"
+                                : "text-foreground"
                             }`}
                           >
                             {resource.title}
                           </span>
-                          <span className="text-xs text-slate-400">
+                          <span className="text-xs text-muted-foreground">
                             {formatTime(totalTime)}
                           </span>
                         </div>
                         {isCompleted && (
-                          <CheckCircle2 className="h-4 w-4 text-green-500 shrink-0" />
+                          <CheckCircle2 className="h-4 w-4 text-success shrink-0" />
                         )}
                       </button>
                     );
@@ -1062,7 +1062,7 @@ export default function InstanceDetailsPage() {
 
         {/* Completion Message */}
         {progressPercent === 100 && (
-          <div className="mt-8 bg-linear-to-r from-green-400 via-emerald-500 to-teal-500 rounded-2xl p-8 text-center text-white shadow-2xl">
+          <div className="mt-8 bg-linear-to-r from-success to-info rounded-2xl p-8 text-center text-white shadow-2xl">
             <CheckCircle2 className="h-16 w-16 mx-auto mb-4" />
             <h3 className="text-2xl font-bold mb-2">Congratulations!</h3>
             <p className="text-white/90">
@@ -1083,30 +1083,30 @@ export default function InstanceDetailsPage() {
       {/* Add Resource Modal */}
       {showAddResourceModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="bg-card rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="p-6">
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-2xl font-bold text-slate-900 dark:text-white">
+                <h3 className="text-2xl font-bold text-foreground">
                   Add Resource
                 </h3>
                 <button
                   onClick={() => setShowAddResourceModal(false)}
-                  className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                  className="p-2 rounded-lg hover:bg-muted transition-colors"
                 >
-                  <X className="h-5 w-5 text-slate-600 dark:text-slate-400" />
+                  <X className="h-5 w-5 text-muted-foreground" />
                 </button>
               </div>
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                  <label className="block text-sm font-medium text-foreground mb-2">
                     Resource Type
                   </label>
                   <select
                     name="type"
                     value={resourceForm.type}
                     onChange={handleResourceFormChange}
-                    className="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-white"
+                    className="w-full px-4 py-2 border border-border bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground"
                   >
                     <option value="youtube-video">YouTube Video</option>
                     <option value="youtube-playlist">YouTube Playlist</option>
@@ -1118,7 +1118,7 @@ export default function InstanceDetailsPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                  <label className="block text-sm font-medium text-foreground mb-2">
                     URL *
                   </label>
                   <input
@@ -1135,7 +1135,7 @@ export default function InstanceDetailsPage() {
                             ? "https://example.com/document.pdf"
                             : "https://example.com/resource"
                     }
-                    className="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-white"
+                    className="w-full px-4 py-2 border border-border bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground"
                   />
                 </div>
 
@@ -1143,7 +1143,7 @@ export default function InstanceDetailsPage() {
                   resourceForm.type,
                 ) && (
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                    <label className="block text-sm font-medium text-foreground mb-2">
                       Title {resourceForm.type === "custom-link" && "*"}
                     </label>
                     <input
@@ -1152,7 +1152,7 @@ export default function InstanceDetailsPage() {
                       value={resourceForm.title}
                       onChange={handleResourceFormChange}
                       placeholder="Resource title"
-                      className="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-white"
+                      className="w-full px-4 py-2 border border-border bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground"
                     />
                   </div>
                 )}
@@ -1160,7 +1160,7 @@ export default function InstanceDetailsPage() {
                 {resourceForm.type === "pdf" && (
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                      <label className="block text-sm font-medium text-foreground mb-2">
                         Number of Pages
                       </label>
                       <input
@@ -1170,11 +1170,11 @@ export default function InstanceDetailsPage() {
                         onChange={handleResourceFormChange}
                         placeholder="50"
                         min="1"
-                        className="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-white"
+                        className="w-full px-4 py-2 border border-border bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                      <label className="block text-sm font-medium text-foreground mb-2">
                         Minutes per Page
                       </label>
                       <input
@@ -1184,7 +1184,7 @@ export default function InstanceDetailsPage() {
                         onChange={handleResourceFormChange}
                         placeholder="3"
                         min="1"
-                        className="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-white"
+                        className="w-full px-4 py-2 border border-border bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground"
                       />
                     </div>
                   </div>
@@ -1194,7 +1194,7 @@ export default function InstanceDetailsPage() {
                   resourceForm.type === "google-drive" ||
                   resourceForm.type === "custom-link") && (
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                    <label className="block text-sm font-medium text-foreground mb-2">
                       Estimated Time (minutes)
                     </label>
                     <input
@@ -1204,7 +1204,7 @@ export default function InstanceDetailsPage() {
                       onChange={handleResourceFormChange}
                       placeholder="10"
                       min="1"
-                      className="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-white"
+                      className="w-full px-4 py-2 border border-border bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground"
                     />
                   </div>
                 )}
@@ -1214,7 +1214,7 @@ export default function InstanceDetailsPage() {
                 <button
                   onClick={handleSubmitAddResource}
                   disabled={addingResource || !resourceForm.url}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
                 >
                   {addingResource ? (
                     <>
@@ -1231,7 +1231,7 @@ export default function InstanceDetailsPage() {
                 <button
                   onClick={() => setShowAddResourceModal(false)}
                   disabled={addingResource}
-                  className="px-4 py-3 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors font-medium"
+                  className="px-4 py-3 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/80 transition-colors font-medium"
                 >
                   Cancel
                 </button>

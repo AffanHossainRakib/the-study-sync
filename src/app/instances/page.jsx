@@ -89,15 +89,15 @@ export default function MyInstancesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-50 via-purple-50/30 to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 py-12">
+    <div className="min-h-screen bg-linear-to-br from-background via-primary/5 to-background py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-10">
           <div>
-            <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-3">
+            <h1 className="text-4xl font-bold text-foreground mb-3">
               My Study Instances
             </h1>
-            <p className="text-lg text-slate-600 dark:text-slate-400">
+            <p className="text-lg text-muted-foreground">
               Track your active learning sessions and monitor progress
             </p>
           </div>
@@ -127,14 +127,14 @@ export default function MyInstancesPage() {
           </div>
         ) : instances.length === 0 ? (
           /* Empty State */
-          <div className="bg-white dark:bg-slate-900 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-2xl p-16 text-center">
+          <div className="bg-card border-2 border-dashed border-border rounded-2xl p-16 text-center">
             <div className="bg-primary/10 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
               <BookOpen className="h-10 w-10 text-primary" />
             </div>
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
+            <h3 className="text-xl font-bold text-foreground mb-2">
               No active instances
             </h3>
-            <p className="text-slate-600 dark:text-slate-400 mb-6 max-w-md mx-auto">
+            <p className="text-muted-foreground mb-6 max-w-md mx-auto">
               Start learning by creating an instance from a study plan
             </p>
             <Link
@@ -155,7 +155,7 @@ export default function MyInstancesPage() {
               return (
                 <div
                   key={instance._id}
-                  className="group bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden hover:shadow-lg hover:border-primary/50 transition-all"
+                  className="group bg-card border border-border rounded-2xl overflow-hidden hover:shadow-lg hover:border-primary/50 transition-all"
                 >
                   {/* Header accent */}
                   <div className="h-1 bg-primary group-hover:h-2 transition-all" />
@@ -164,7 +164,7 @@ export default function MyInstancesPage() {
                   <div className="p-6">
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex-1">
-                        <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+                        <h3 className="text-lg font-bold text-foreground mb-2 line-clamp-2 group-hover:text-primary transition-colors">
                           {(() => {
                             const courseCode = instance.studyPlan?.courseCode || "General";
                             const title = instance.customTitle || instance.studyPlan?.title || "Untitled Instance";
@@ -178,7 +178,7 @@ export default function MyInstancesPage() {
                             e.preventDefault();
                             handleEdit(instance);
                           }}
-                          className="text-slate-400 hover:text-primary transition-colors"
+                          className="text-muted-foreground hover:text-primary transition-colors"
                         >
                           <Edit className="h-4 w-4" />
                         </button>
@@ -187,7 +187,7 @@ export default function MyInstancesPage() {
                             e.preventDefault();
                             handleDelete(instance._id);
                           }}
-                          className="text-slate-400 hover:text-red-600 transition-colors"
+                          className="text-muted-foreground hover:text-destructive transition-colors"
                           disabled={deletingId === instance._id}
                         >
                           {deletingId === instance._id ? (
@@ -200,7 +200,7 @@ export default function MyInstancesPage() {
                     </div>
 
                     {instance.notes && (
-                      <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2 mb-4 italic">
+                      <p className="text-sm text-muted-foreground line-clamp-2 mb-4 italic">
                         {instance.notes}
                       </p>
                     )}
@@ -210,15 +210,15 @@ export default function MyInstancesPage() {
                       {/* Resource Progress */}
                       <div>
                         <div className="flex items-center justify-between text-sm mb-2">
-                          <span className="text-slate-600 dark:text-slate-400 font-medium">
+                          <span className="text-muted-foreground font-medium">
                             Resources
                           </span>
-                          <span className="font-bold text-slate-900 dark:text-white">
+                          <span className="font-bold text-foreground">
                             {instance.completedResources || 0}/
                             {instance.totalResources || 0}
                           </span>
                         </div>
-                        <div className="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                        <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
                           <div
                             className="h-full bg-primary transition-all duration-500"
                             style={{ width: `${progressPercent}%` }}
@@ -229,15 +229,15 @@ export default function MyInstancesPage() {
                       {/* Time Progress */}
                       <div>
                         <div className="flex items-center justify-between text-sm mb-2">
-                          <span className="text-slate-600 dark:text-slate-400 font-medium">
+                          <span className="text-muted-foreground font-medium">
                             Time
                           </span>
-                          <span className="font-bold text-slate-900 dark:text-white">
+                          <span className="font-bold text-foreground">
                             {formatTime(instance.completedTime || 0)}/
                             {formatTime(instance.totalTime || 0)}
                           </span>
                         </div>
-                        <div className="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                        <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
                           <div
                             className="h-full bg-primary/70 transition-all duration-500"
                             style={{ width: `${timePercent}%` }}
@@ -247,15 +247,15 @@ export default function MyInstancesPage() {
                     </div>
 
                     {/* Meta Info */}
-                    <div className="flex items-center gap-4 text-sm text-slate-600 dark:text-slate-400">
+                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
                       <div className="flex items-center">
-                        <CheckCircle2 className="h-4 w-4 mr-1 text-green-500" />
+                        <CheckCircle2 className="h-4 w-4 mr-1 text-success" />
                         <span className="font-medium">
                           {Math.round(progressPercent)}%
                         </span>
                       </div>
                       <div className="flex items-center">
-                        <Clock className="h-4 w-4 mr-1 text-orange-500" />
+                        <Clock className="h-4 w-4 mr-1 text-muted-foreground" />
                         <span className="font-medium">
                           {formatTime(instance.remainingTime || 0)} left
                         </span>
@@ -263,7 +263,7 @@ export default function MyInstancesPage() {
                     </div>
 
                     {instance.deadline && (
-                      <div className="mt-3 px-3 py-1.5 bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 rounded-lg text-xs font-medium inline-flex items-center gap-1">
+                      <div className="mt-3 px-3 py-1.5 bg-primary/10 text-primary rounded-lg text-xs font-medium inline-flex items-center gap-1">
                         <Clock className="h-3 w-3" />
                         Deadline:{" "}
                         {new Date(instance.deadline).toLocaleDateString()}
@@ -272,7 +272,7 @@ export default function MyInstancesPage() {
                   </div>
 
                   {/* Footer */}
-                  <div className="px-6 py-4 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-700">
+                  <div className="px-6 py-4 bg-muted/50 border-t border-border">
                     <Link
                       href={`/instances/${instance._id}`}
                       className="inline-flex items-center text-sm font-medium text-primary hover:text-primary/80 transition-colors"

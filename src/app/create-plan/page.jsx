@@ -10,7 +10,7 @@ import {
   updateStudyPlan,
   createOrGetResource,
 } from "@/lib/api";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import BasicInfoForm from "./components/BasicInfoForm";
 import AddResourceForm from "./components/AddResourceForm";
 import ResourceList from "./components/ResourceList";

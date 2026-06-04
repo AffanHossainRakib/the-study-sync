@@ -76,6 +76,7 @@ const Sidebar = () => {
     { href: "/lab-finder", label: "Lab Finder", icon: Monitor },
     { href: "/create-plan", label: "Create New Plan", icon: Plus },
     { href: "/reviews", label: "Add Review", icon: Star },
+    { href: "/profile", label: "Profile", icon: User },
   ];
 
   // Admin link

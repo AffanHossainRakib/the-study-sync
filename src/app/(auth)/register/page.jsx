@@ -3,7 +3,7 @@
 import SignupForm from "@/components/Auth/signup-from";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { toast, Toaster } from "react-hot-toast";
+import { toast } from "sonner";
 import useAuth from "@/hooks/useAuth";
 
 const Signup = () => {
@@ -127,7 +127,6 @@ const Signup = () => {
         error={error}
         setError={setError}
       />
-      <Toaster position="top-right" />
     </>
   );
 };

@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import useAuth from "@/hooks/useAuth";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { toast, Toaster } from "react-hot-toast";
+import { toast } from "sonner";
 
 const ForgetPassword = () => {
   const { resetPassword } = useAuth();
@@ -97,7 +97,6 @@ const ForgetPassword = () => {
           </Field>
         </FieldGroup>
       </form>
-      <Toaster position="top-right" />
     </div>
   );
 };

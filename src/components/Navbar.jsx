@@ -59,6 +59,7 @@ const Navbar = () => {
     { href: "/plans", label: "Public Plans", icon: GraduationCap },
     { href: "/lab-finder", label: "Lab Finder", icon: Monitor },
     { href: "/reviews", label: "Add Review", icon: Star },
+    { href: "/profile", label: "Profile", icon: User },
   ];
 
   // Helper to determine if link is active

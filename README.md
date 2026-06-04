@@ -66,8 +66,6 @@
 
 ### 📈 Analytics & Tracking
 
-- **Mixpanel Integration** - Comprehensive event tracking
-- **Tracked Events**: Sign-up, sign-in, plan creation, sharing, conversions, errors
 - **Vercel Analytics** - Page view and performance monitoring
 
 ### 🎨 Modern, Colorful UI
@@ -202,14 +200,10 @@ study-sync/
 │   │   ├── db.js               # Database utilities
 │   │   ├── auth.js             # Auth middleware
 │   │   ├── youtube.js          # YouTube API
-│   │   ├── email.js            # Email service
-│   │   └── mixpanel.js         # Analytics
+│   │   └── email.js            # Email service
 │   └── providers/              # Context providers
 ├── public/                      # Static assets
-├── DOCS/                        # Documentation
-│   ├── DATABASE_SCHEMA.md      # Database schema
-│   └── PROJECT_REPORT.md       # Project report
-├── tailwind.config.js          # Tailwind configuration
+├── src/app/globals.css         # Design tokens & Tailwind v4 theme
 ├── next.config.mjs             # Next.js configuration
 └── package.json                # Dependencies
 ```
@@ -240,9 +234,8 @@ study-sync/
 
 ### External APIs & Services
 
-- **YouTube Data API v3**: Video and playlist metadata via googleapis 166.0.0
+- **YouTube Data API v3**: Video and playlist metadata via googleapis
 - **Firebase**: Client and admin authentication
-- **Mixpanel**: Analytics and event tracking (Token: `bda4836aced67124ac20698bdbfb0273`)
 - **Vercel**: Hosting, analytics, and cron jobs
 
 ### Database Architecture
@@ -254,8 +247,6 @@ The application uses MongoDB with **5 main collections**:
 3. **studyplans** - Study plan templates with metadata
 4. **instances** - User's personal study instances with progress
 5. **userprogresses** - Global completion tracking per user per resource
-
-See [Database Schema](DOCS/DATABASE_SCHEMA.md) for detailed documentation.
 
 ## 📖 Key Concepts
 
@@ -462,7 +453,6 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 **Affan Hossain Rakib**
 
 - GitHub: [@AffanHossainRakib](https://github.com/AffanHossainRakib)
-- Email: your.email@example.com
 
 ## 🙏 Acknowledgments
 
@@ -473,7 +463,6 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - Animations by [Framer Motion](https://www.framer.com/motion/) - Production-ready animations
 - Authentication by [Firebase](https://firebase.google.com/) - Secure auth
 - Database by [MongoDB](https://www.mongodb.com/) - Flexible NoSQL database
-- Analytics by [Mixpanel](https://mixpanel.com/) - Product analytics
 - Hosted on [Vercel](https://vercel.com) - Frontend cloud platform
 
 ## 📸 Screenshots
