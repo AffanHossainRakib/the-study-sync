@@ -96,7 +96,7 @@ export default function MyStudyPlansPage() {
   const handleDelete = async (id) => {
     if (
       !confirm(
-        "Are you sure you want to delete this study plan? This action cannot be undone."
+        "Are you sure you want to delete this study plan? This action cannot be undone.",
       )
     ) {
       return;
@@ -121,15 +121,15 @@ export default function MyStudyPlansPage() {
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-50 via-purple-50/30 to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 py-12">
+    <div className="min-h-screen bg-linear-to-br from-background via-primary/5 to-background py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-10">
           <div>
-            <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-3">
+            <h1 className="text-4xl font-bold text-foreground mb-3">
               My Study Plans
             </h1>
-            <p className="text-lg text-slate-600 dark:text-slate-400">
+            <p className="text-lg text-muted-foreground">
               Plans you created or have been shared with you
             </p>
           </div>
@@ -143,7 +143,7 @@ export default function MyStudyPlansPage() {
         </div>
 
         {/* Filters */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 mb-8 shadow-sm">
+        <div className="bg-card border border-border rounded-2xl p-6 mb-8 shadow-sm">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Search */}
             <div className="relative">
@@ -241,14 +241,14 @@ export default function MyStudyPlansPage() {
           </div>
         ) : plans.length === 0 ? (
           /* Empty State */
-          <div className="bg-white dark:bg-slate-900 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-2xl p-16 text-center">
+          <div className="bg-card border-2 border-dashed border-border rounded-2xl p-16 text-center">
             <div className="bg-primary/10 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
               <BookOpen className="h-10 w-10 text-primary" />
             </div>
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
+            <h3 className="text-xl font-bold text-foreground mb-2">
               No study plans found
             </h3>
-            <p className="text-slate-600 dark:text-slate-400 mb-6 max-w-md mx-auto">
+            <p className="text-muted-foreground mb-6 max-w-md mx-auto">
               {searchTerm || courseFilter
                 ? "Try adjusting your filters"
                 : "Create your first study plan to get started"}
@@ -280,7 +280,7 @@ export default function MyStudyPlansPage() {
                 return (
                   <div
                     key={plan._id}
-                    className="group bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden hover:shadow-lg hover:border-primary/50 transition-all"
+                    className="group bg-card border border-border rounded-2xl overflow-hidden hover:shadow-lg hover:border-primary/50 transition-all"
                   >
                     {/* Header accent */}
                     <div className="h-1 bg-primary group-hover:h-2 transition-all" />
@@ -293,12 +293,12 @@ export default function MyStudyPlansPage() {
                             {plan.courseCode}
                           </span>
                           {isShared && (
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-info/15 text-info">
                               Shared
                             </span>
                           )}
                           {plan.isPublic && (
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400">
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success/15 text-success">
                               Public
                             </span>
                           )}
@@ -309,7 +309,7 @@ export default function MyStudyPlansPage() {
                             handleDelete(plan._id);
                           }}
                           disabled={deletingId === plan._id || !isCreator}
-                          className="text-slate-400 hover:text-red-600 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                          className="text-muted-foreground hover:text-destructive transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                           title={
                             isCreator
                               ? "Delete plan"
@@ -324,16 +324,16 @@ export default function MyStudyPlansPage() {
                         </button>
                       </div>
 
-                      <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+                      <h3 className="text-lg font-bold text-foreground mb-2 line-clamp-2 group-hover:text-primary transition-colors">
                         {plan.courseCode} - {plan.title}
                       </h3>
 
-                      <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2 mb-4">
+                      <p className="text-sm text-muted-foreground line-clamp-2 mb-4">
                         {plan.shortDescription}
                       </p>
 
                       {/* Meta Info */}
-                      <div className="flex items-center gap-4 text-sm text-slate-600 dark:text-slate-400 mb-4">
+                      <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
                         <div className="flex items-center">
                           <FileText className="h-4 w-4 mr-1 text-primary" />
                           <span className="font-medium">
@@ -347,7 +347,7 @@ export default function MyStudyPlansPage() {
                           </span>
                         </div>
                         <div className="flex items-center">
-                          <Users className="h-4 w-4 mr-1 text-green-500" />
+                          <Users className="h-4 w-4 mr-1 text-primary" />
                           <span className="font-medium">
                             {plan.instanceCount || 0}
                           </span>
@@ -355,7 +355,7 @@ export default function MyStudyPlansPage() {
                       </div>
 
                       {isShared && (
-                        <div className="text-xs text-slate-500 dark:text-slate-400">
+                        <div className="text-xs text-muted-foreground">
                           Created by{" "}
                           {plan.createdBy?.displayName ||
                             plan.createdBy?.email?.split("@")[0]}
@@ -364,7 +364,7 @@ export default function MyStudyPlansPage() {
                     </div>
 
                     {/* Footer Actions */}
-                    <div className="px-6 py-4 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                    <div className="px-6 py-4 bg-muted/50 border-t border-border flex items-center justify-between">
                       <Link
                         href={`/plans/${plan._id}`}
                         className="inline-flex items-center text-sm font-medium text-primary hover:text-primary/80 transition-colors"
@@ -375,7 +375,7 @@ export default function MyStudyPlansPage() {
                       {(isCreator || plan.canEdit) && (
                         <Link
                           href={`/plans/${plan._id}/edit`}
-                          className="inline-flex items-center text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+                          className="inline-flex items-center text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
                         >
                           <Edit className="h-4 w-4" />
                         </Link>
@@ -392,7 +392,7 @@ export default function MyStudyPlansPage() {
                 <button
                   onClick={() => handlePageChange(page - 1)}
                   disabled={!pagination.hasPrevPage}
-                  className="px-6 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-400 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 dark:hover:bg-slate-800 transition-all"
+                  className="px-6 py-2 bg-card border border-border rounded-xl text-sm font-medium text-muted-foreground disabled:opacity-50 disabled:cursor-not-allowed hover:bg-muted transition-all"
                 >
                   Previous
                 </button>
@@ -402,7 +402,7 @@ export default function MyStudyPlansPage() {
                 <button
                   onClick={() => handlePageChange(page + 1)}
                   disabled={!pagination.hasNextPage}
-                  className="px-6 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-400 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 dark:hover:bg-slate-800 transition-all"
+                  className="px-6 py-2 bg-card border border-border rounded-xl text-sm font-medium text-muted-foreground disabled:opacity-50 disabled:cursor-not-allowed hover:bg-muted transition-all"
                 >
                   Next
                 </button>
@@ -414,22 +414,22 @@ export default function MyStudyPlansPage() {
         {/* Quick Stats */}
         {plans.length > 0 && (
           <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all">
+            <div className="bg-card border border-border rounded-2xl p-6 shadow-sm hover:shadow-md transition-all">
               <div className="bg-primary/10 rounded-xl p-3 w-fit mb-4">
                 <BookOpen className="w-6 h-6 text-primary" />
               </div>
-              <div className="text-4xl font-bold text-slate-900 dark:text-white mb-1">
+              <div className="text-4xl font-bold text-foreground mb-1">
                 {plans.length}
               </div>
-              <div className="text-slate-600 dark:text-slate-400 font-medium">
+              <div className="text-muted-foreground font-medium">
                 Total Study Plans
               </div>
             </div>
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all">
+            <div className="bg-card border border-border rounded-2xl p-6 shadow-sm hover:shadow-md transition-all">
               <div className="bg-primary/10 rounded-xl p-3 w-fit mb-4">
                 <Plus className="w-6 h-6 text-primary" />
               </div>
-              <div className="text-4xl font-bold text-slate-900 dark:text-white mb-1">
+              <div className="text-4xl font-bold text-foreground mb-1">
                 {
                   plans.filter((p) => {
                     const creatorId =
@@ -449,15 +449,15 @@ export default function MyStudyPlansPage() {
                   }).length
                 }
               </div>
-              <div className="text-slate-600 dark:text-slate-400 font-medium">
+              <div className="text-muted-foreground font-medium">
                 Created by You
               </div>
             </div>
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all">
+            <div className="bg-card border border-border rounded-2xl p-6 shadow-sm hover:shadow-md transition-all">
               <div className="bg-primary/10 rounded-xl p-3 w-fit mb-4">
                 <Users className="w-6 h-6 text-primary" />
               </div>
-              <div className="text-4xl font-bold text-slate-900 dark:text-white mb-1">
+              <div className="text-4xl font-bold text-foreground mb-1">
                 {
                   plans.filter((p) => {
                     const creatorId =
@@ -477,7 +477,7 @@ export default function MyStudyPlansPage() {
                   }).length
                 }
               </div>
-              <div className="text-slate-600 dark:text-slate-400 font-medium">
+              <div className="text-muted-foreground font-medium">
                 Shared with You
               </div>
             </div>

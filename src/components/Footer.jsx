@@ -10,7 +10,9 @@ import {
   Twitter,
   Linkedin,
   Youtube,
+  GraduationCap,
 } from "lucide-react";
+import Logo from "./Logo/Logo";
 
 const Footer = () => {
   /*
@@ -90,14 +92,10 @@ const Footer = () => {
         <div className="flex flex-col lg:flex-row lg:justify-between gap-8 lg:gap-12 mb-8 sm:mb-12">
           {/* Brand Column */}
           <div className="lg:max-w-sm">
-            <Link href="/" className="inline-flex items-center gap-2 mb-4">
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-purple-500 flex items-center justify-center shadow-md">
-                <BookOpen className="h-6 w-6 text-white" />
-              </div>
-              <span className="text-xl font-bold text-foreground">
-                The Study Sync
-              </span>
-            </Link>
+            <div className=" mb-4">
+              <Logo />
+            </div>
+
             <p className="text-sm text-muted-foreground mb-6 max-w-sm">
               Centralize your learning journey. Organize YouTube playlists,
               PDFs, and articles in one powerful platform with smart progress

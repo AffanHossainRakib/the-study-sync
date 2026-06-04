@@ -176,16 +176,16 @@ export default function StudyPlanDetailsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-linear-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-slate-950 dark:via-purple-950 dark:to-slate-950 py-12">
+      <div className="min-h-screen bg-linear-to-br from-background via-primary/5 to-background py-12">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="animate-pulse">
-            <div className="h-8 bg-slate-200 dark:bg-slate-800 rounded w-1/4 mb-8" />
-            <div className="h-10 bg-slate-200 dark:bg-slate-800 rounded w-3/4 mb-4" />
-            <div className="h-6 bg-slate-200 dark:bg-slate-800 rounded w-full mb-2" />
-            <div className="h-6 bg-slate-200 dark:bg-slate-800 rounded w-2/3 mb-8" />
+            <div className="h-8 bg-muted rounded w-1/4 mb-8" />
+            <div className="h-10 bg-muted rounded w-3/4 mb-4" />
+            <div className="h-6 bg-muted rounded w-full mb-2" />
+            <div className="h-6 bg-muted rounded w-2/3 mb-8" />
             <div className="flex gap-4 mb-8">
-              <div className="h-10 bg-slate-200 dark:bg-slate-800 rounded w-32" />
-              <div className="h-10 bg-slate-200 dark:bg-slate-800 rounded w-32" />
+              <div className="h-10 bg-muted rounded w-32" />
+              <div className="h-10 bg-muted rounded w-32" />
             </div>
           </div>
         </div>
@@ -195,15 +195,15 @@ export default function StudyPlanDetailsPage() {
 
   if (!plan) {
     return (
-      <div className="min-h-screen bg-linear-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-slate-950 dark:via-purple-950 dark:to-slate-950 py-12">
+      <div className="min-h-screen bg-linear-to-br from-background via-primary/5 to-background py-12">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="bg-linear-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-2xl p-16">
-            <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-4">
+          <div className="bg-card border-2 border-dashed border-border rounded-2xl p-16">
+            <h1 className="text-3xl font-bold text-foreground mb-4">
               Study Plan Not Found
             </h1>
             <Link
               href="/plans"
-              className="inline-flex items-center justify-center rounded-xl bg-linear-to-r from-blue-600 to-purple-600 px-6 py-3 text-base font-medium text-white shadow-lg hover:shadow-xl hover:from-blue-700 hover:to-purple-700 transition-all transform hover:scale-105"
+              className="inline-flex items-center justify-center rounded-xl bg-primary px-6 py-3 text-base font-medium text-primary-foreground shadow-lg hover:shadow-xl hover:bg-primary/90 transition-all transform hover:scale-105"
             >
               Browse Public Plans
             </Link>
@@ -214,28 +214,28 @@ export default function StudyPlanDetailsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-slate-950 dark:via-purple-950 dark:to-slate-950 py-12">
+    <div className="min-h-screen bg-linear-to-br from-background via-primary/5 to-background py-12">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Back Button */}
         <Link
           href="/plans"
-          className="inline-flex items-center text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 mb-6 transition-colors"
+          className="inline-flex items-center text-sm font-medium text-muted-foreground hover:text-primary mb-6 transition-colors"
         >
           <ArrowLeft className="h-4 w-4 mr-1" />
           Back to Public Plans
         </Link>
 
         {/* Header */}
-        <div className="bg-white dark:bg-slate-900 border-2 border-purple-200 dark:border-purple-900 rounded-2xl p-8 mb-6 shadow-lg">
+        <div className="bg-card border-2 border-border rounded-2xl p-8 mb-6 shadow-lg">
           <div className="flex items-start justify-between mb-6">
             <div className="flex-1">
-              <span className="inline-flex items-center px-4 py-1.5 rounded-full text-sm font-bold bg-linear-to-r from-blue-500 to-purple-500 text-white mb-4 shadow-lg">
+              <span className="inline-flex items-center px-4 py-1.5 rounded-full text-sm font-bold bg-primary text-primary-foreground mb-4 shadow-lg">
                 {plan.courseCode}
               </span>
-              <h1 className="text-4xl font-bold text-black dark:text-white bg-clip-text mb-3">
+              <h1 className="text-4xl font-bold text-foreground mb-3">
                 {plan.courseCode} - {plan.title}
               </h1>
-              <p className="text-lg text-slate-600 dark:text-slate-400 mb-4">
+              <p className="text-lg text-muted-foreground mb-4">
                 {plan.shortDescription}
               </p>
             </div>
@@ -243,15 +243,15 @@ export default function StudyPlanDetailsPage() {
 
           {/* Meta Info */}
           <div className="flex flex-wrap items-center gap-4 text-sm mb-6">
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-lg font-medium">
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-primary/10 text-primary rounded-lg font-medium">
               <FileText className="h-4 w-4" />
               {plan.resourceCount || 0} resources
             </div>
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-lg font-medium">
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-primary/10 text-primary rounded-lg font-medium">
               <Clock className="h-4 w-4" />
               {formatTime(plan.totalTime)} total
             </div>
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-lg font-medium">
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-primary/10 text-primary rounded-lg font-medium">
               <Users className="h-4 w-4" />
               {plan.instanceCount || 0} started
             </div>
@@ -259,14 +259,14 @@ export default function StudyPlanDetailsPage() {
 
           {/* Creator */}
           <div className="flex items-center gap-2 mb-6">
-            <div className="w-8 h-8 rounded-full bg-linear-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white text-sm font-bold">
+            <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-sm font-bold">
               {(plan.createdBy?.displayName || plan.createdBy?.email || "A")
                 .charAt(0)
                 .toUpperCase()}
             </div>
-            <div className="text-sm text-slate-500 dark:text-slate-400">
+            <div className="text-sm text-muted-foreground">
               Created by{" "}
-              <span className="font-bold text-slate-700 dark:text-slate-300">
+              <span className="font-bold text-foreground">
                 {plan.createdBy?.displayName ||
                   plan.createdBy?.email?.split("@")[0] ||
                   "Anonymous"}
@@ -279,7 +279,7 @@ export default function StudyPlanDetailsPage() {
             <button
               onClick={handleStartInstance}
               disabled={creatingInstance}
-              className="inline-flex items-center justify-center rounded-xl bg-green-600 px-6 py-3 text-base font-medium text-white shadow-lg hover:shadow-xl hover:from-green-700 hover:to-emerald-700 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+              className="inline-flex items-center justify-center rounded-xl bg-primary px-6 py-3 text-base font-medium text-primary-foreground shadow-lg hover:shadow-xl hover:bg-primary/90 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
               {creatingInstance ? (
                 <>
@@ -297,7 +297,7 @@ export default function StudyPlanDetailsPage() {
             {plan.canEdit && (
               <Link
                 href={`/plans/${params.id}/edit`}
-                className="inline-flex items-center justify-center rounded-xl bg-purple-600 px-6 py-3 text-base font-medium text-white shadow-lg hover:shadow-xl hover:from-blue-700 hover:to-purple-700 transition-all transform hover:scale-105"
+                className="inline-flex items-center justify-center rounded-xl bg-secondary px-6 py-3 text-base font-medium text-secondary-foreground shadow-lg hover:shadow-xl hover:bg-secondary/80 transition-all transform hover:scale-105"
                 onClick={(e) => {
                   console.log(
                     "Edit link clicked, navigating to:",
@@ -313,7 +313,7 @@ export default function StudyPlanDetailsPage() {
             {plan.canEdit && (
               <button
                 onClick={() => setShowShareDialog(true)}
-                className="inline-flex items-center justify-center rounded-xl border-2 border-blue-200 dark:border-blue-900 bg-white dark:bg-slate-900 px-6 py-3 text-base font-medium text-blue-600 dark:text-blue-400 shadow-lg hover:bg-blue-50 dark:hover:bg-blue-950 hover:border-blue-400 dark:hover:border-blue-600 transition-all"
+                className="inline-flex items-center justify-center rounded-xl border-2 border-primary/30 bg-card px-6 py-3 text-base font-medium text-primary shadow-lg hover:bg-primary/10 hover:border-primary/50 transition-all"
               >
                 <Share2 className="h-5 w-5 mr-2" />
                 Share
@@ -489,30 +489,30 @@ export default function StudyPlanDetailsPage() {
 
         {/* Full Description */}
         {plan.fullDescription && (
-          <div className="bg-white dark:bg-slate-900 border-2 border-blue-200 dark:border-blue-900 rounded-2xl p-6 mb-6 shadow-lg">
-            <h2 className="text-2xl font-bold bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
+          <div className="bg-card border-2 border-border rounded-2xl p-6 mb-6 shadow-lg">
+            <h2 className="text-2xl font-bold bg-linear-to-r from-primary to-info bg-clip-text text-transparent mb-4">
               Description
             </h2>
-            <p className="text-slate-600 dark:text-slate-400 whitespace-pre-wrap leading-relaxed">
+            <p className="text-muted-foreground whitespace-pre-wrap leading-relaxed">
               {plan.fullDescription}
             </p>
           </div>
         )}
 
         {/* Resources List */}
-        <div className="bg-white dark:bg-slate-900 border-2 border-purple-200 dark:border-purple-900 rounded-2xl p-6 shadow-lg">
+        <div className="bg-card border-2 border-border rounded-2xl p-6 shadow-lg">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            <h2 className="text-2xl font-bold bg-linear-to-r from-primary to-info bg-clip-text text-transparent">
               Resources ({plan.resourceIds?.length || 0})
             </h2>
 
             {plan.resourceIds && plan.resourceIds.length > 0 && (
               <div className="flex items-center gap-2">
-                <ArrowUpDown className="h-4 w-4 text-slate-500" />
+                <ArrowUpDown className="h-4 w-4 text-muted-foreground" />
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="px-3 py-1.5 text-sm border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="px-3 py-1.5 text-sm border border-input bg-background text-foreground rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
                 >
                   <option value="order">Original Order</option>
                   <option value="title">Sort by Title</option>
@@ -543,7 +543,7 @@ export default function StudyPlanDetailsPage() {
                 return (
                   <div
                     key={resource._id}
-                    className="flex items-start gap-4 p-5 bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-800 rounded-xl transition-all"
+                    className="flex items-start gap-4 p-5 bg-muted/50 hover:bg-muted border-2 border-border hover:border-primary/40 rounded-xl transition-all"
                   >
                     <div className="shrink-0">
                       <div
@@ -562,7 +562,7 @@ export default function StudyPlanDetailsPage() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2">
                         <div className="flex-1">
-                          <h3 className="text-base font-bold text-slate-900 dark:text-white mb-2 line-clamp-2">
+                          <h3 className="text-base font-bold text-foreground mb-2 line-clamp-2">
                             {index + 1}. {resource.title}
                           </h3>
                           <div className="flex items-center gap-3 text-xs">
@@ -577,7 +577,7 @@ export default function StudyPlanDetailsPage() {
                             >
                               {typeInfo.label}
                             </span>
-                            <span className="flex items-center gap-1 font-medium text-slate-600 dark:text-slate-400">
+                            <span className="flex items-center gap-1 font-medium text-muted-foreground">
                               <Clock className="h-3.5 w-3.5" />
                               {formatTime(totalTime)}
                             </span>
@@ -587,7 +587,7 @@ export default function StudyPlanDetailsPage() {
                           href={resource.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="shrink-0 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors transform hover:scale-110"
+                          className="shrink-0 text-muted-foreground hover:text-primary transition-colors transform hover:scale-110"
                         >
                           <ExternalLink className="h-5 w-5" />
                         </a>
@@ -598,7 +598,7 @@ export default function StudyPlanDetailsPage() {
               })}
             </div>
           ) : (
-            <p className="text-slate-600 dark:text-slate-400 text-center py-8 font-medium">
+            <p className="text-muted-foreground text-center py-8 font-medium">
               No resources added yet.
             </p>
           )}
@@ -606,9 +606,9 @@ export default function StudyPlanDetailsPage() {
 
         {/* Last Modified Info */}
         {plan.lastModifiedBy && (
-          <div className="mt-6 px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl text-sm text-slate-600 dark:text-slate-400 text-center">
+          <div className="mt-6 px-4 py-2 bg-muted rounded-xl text-sm text-muted-foreground text-center">
             Last modified by{" "}
-            <span className="font-bold text-slate-700 dark:text-slate-300">
+            <span className="font-bold text-foreground">
               {plan.lastModifiedBy?.displayName ||
                 plan.lastModifiedBy?.email?.split("@")[0]}
             </span>{" "}
@@ -620,28 +620,28 @@ export default function StudyPlanDetailsPage() {
       {/* Start Plan Dialog */}
       {showStartDialog && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-          <div className="bg-white dark:bg-slate-900 border-2 border-purple-200 dark:border-purple-900 rounded-2xl w-full max-w-md shadow-2xl">
+          <div className="bg-card border-2 border-border rounded-2xl w-full max-w-md shadow-2xl">
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-2xl font-bold bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                <h3 className="text-2xl font-bold bg-linear-to-r from-primary to-info bg-clip-text text-transparent">
                   Start Study Plan
                 </h3>
                 <button
                   onClick={() => setShowStartDialog(false)}
-                  className="text-slate-400 hover:text-red-600 transition-colors"
+                  className="text-muted-foreground hover:text-destructive transition-colors"
                 >
                   <X className="h-6 w-6" />
                 </button>
               </div>
 
-              <p className="text-sm text-slate-600 dark:text-slate-400 mb-6">
+              <p className="text-sm text-muted-foreground mb-6">
                 Set your target completion date for this study plan. You can
                 always adjust it later.
               </p>
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-bold text-slate-900 dark:text-white mb-2">
+                  <label className="block text-sm font-bold text-foreground mb-2">
                     Target Completion Date
                   </label>
                   <input
@@ -649,7 +649,7 @@ export default function StudyPlanDetailsPage() {
                     value={endDate}
                     onChange={(e) => setEndDate(e.target.value)}
                     min={new Date().toISOString().split("T")[0]}
-                    className="w-full px-4 py-3 border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-white font-medium"
+                    className="w-full px-4 py-3 border-2 border-input bg-background rounded-xl focus:outline-none focus:ring-2 focus:ring-ring text-foreground font-medium"
                   />
                 </div>
               </div>
@@ -657,7 +657,7 @@ export default function StudyPlanDetailsPage() {
               <div className="flex gap-3 mt-6">
                 <button
                   onClick={() => setShowStartDialog(false)}
-                  className="flex-1 px-4 py-3 border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-all font-medium"
+                  className="flex-1 px-4 py-3 border-2 border-border bg-card text-foreground rounded-xl hover:bg-muted transition-all font-medium"
                   disabled={creatingInstance}
                 >
                   Cancel
@@ -665,7 +665,7 @@ export default function StudyPlanDetailsPage() {
                 <button
                   onClick={handleConfirmStart}
                   disabled={creatingInstance || !endDate}
-                  className="flex-1 px-4 py-3 bg-linear-to-r from-green-600 to-emerald-600 text-white rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed font-medium shadow-lg hover:shadow-xl"
+                  className="flex-1 px-4 py-3 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed font-medium shadow-lg hover:shadow-xl"
                 >
                   {creatingInstance ? (
                     <span className="flex items-center justify-center gap-2">

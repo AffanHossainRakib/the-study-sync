@@ -63,21 +63,21 @@ export default function AllPlansPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50/30 to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 py-12">
+    <div className="min-h-screen bg-linear-to-br from-background via-primary/5 to-background py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-10">
-          <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-3">
+          <h1 className="text-4xl font-bold text-foreground mb-3">
             All Study Plans
           </h1>
-          <p className="text-lg text-slate-600 dark:text-slate-400">
+          <p className="text-lg text-muted-foreground">
             Browse public study plans created by the community. Start an
             instance to begin learning.
           </p>
         </div>
 
         {/* Filters */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 mb-8 shadow-sm">
+        <div className="bg-card border border-border rounded-2xl p-6 mb-8 shadow-sm">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Search */}
             <div className="relative">
@@ -144,14 +144,14 @@ export default function AllPlansPage() {
           </div>
         ) : plans.length === 0 ? (
           /* Empty State */
-          <div className="bg-white dark:bg-slate-900 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-2xl p-16 text-center">
+          <div className="bg-card border-2 border-dashed border-border rounded-2xl p-16 text-center">
             <div className="bg-primary/10 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
               <BookOpen className="h-10 w-10 text-primary" />
             </div>
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
+            <h3 className="text-xl font-bold text-foreground mb-2">
               No study plans found
             </h3>
-            <p className="text-slate-600 dark:text-slate-400 mb-6 max-w-md mx-auto">
+            <p className="text-muted-foreground mb-6 max-w-md mx-auto">
               {searchTerm || courseFilter
                 ? "Try adjusting your filters"
                 : "Be the first to create a study plan!"}
@@ -171,7 +171,7 @@ export default function AllPlansPage() {
                 return (
                   <div
                     key={plan._id}
-                    className="group bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden hover:shadow-lg hover:border-primary/50 transition-all"
+                    className="group bg-card border border-border rounded-2xl overflow-hidden hover:shadow-lg hover:border-primary/50 transition-all"
                   >
                     {/* Header accent */}
                     <div className="h-1 bg-primary group-hover:h-2 transition-all" />
@@ -182,24 +182,24 @@ export default function AllPlansPage() {
                         <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary">
                           {plan.courseCode}
                         </span>
-                        <div className="flex items-center gap-1 text-xs text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-full">
-                          <Users className="h-3 w-3 text-green-500" />
+                        <div className="flex items-center gap-1 text-xs text-muted-foreground bg-muted px-2 py-1 rounded-full">
+                          <Users className="h-3 w-3 text-primary" />
                           <span className="font-medium">
                             {plan.instanceCount || 0}
                           </span>
                         </div>
                       </div>
 
-                      <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+                      <h3 className="text-lg font-bold text-foreground mb-2 line-clamp-2 group-hover:text-primary transition-colors">
                         {plan.courseCode} - {plan.title}
                       </h3>
 
-                      <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-3 mb-4">
+                      <p className="text-sm text-muted-foreground line-clamp-3 mb-4">
                         {plan.shortDescription}
                       </p>
 
                       {/* Meta Info */}
-                      <div className="flex items-center gap-4 text-sm text-slate-600 dark:text-slate-400 mb-4">
+                      <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
                         <div className="flex items-center">
                           <FileText className="h-4 w-4 mr-1 text-primary" />
                           <span className="font-medium">
@@ -225,9 +225,9 @@ export default function AllPlansPage() {
                             .charAt(0)
                             .toUpperCase()}
                         </div>
-                        <div className="text-xs text-slate-500 dark:text-slate-400">
+                        <div className="text-xs text-muted-foreground">
                           By{" "}
-                          <span className="font-medium text-slate-700 dark:text-slate-300">
+                          <span className="font-medium text-foreground">
                             {plan.createdBy?.displayName ||
                               plan.createdBy?.email?.split("@")[0] ||
                               "Anonymous"}
@@ -237,7 +237,7 @@ export default function AllPlansPage() {
                     </div>
 
                     {/* Footer */}
-                    <div className="px-6 py-4 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-700">
+                    <div className="px-6 py-4 bg-muted/50 border-t border-border">
                       <Link
                         href={`/plans/${String(plan._id)}`}
                         className="inline-flex items-center text-sm font-medium text-primary hover:text-primary/80 transition-colors"
@@ -257,7 +257,7 @@ export default function AllPlansPage() {
                 <button
                   onClick={() => handlePageChange(page - 1)}
                   disabled={!pagination.hasPrevPage}
-                  className="px-6 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-400 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 dark:hover:bg-slate-800 transition-all"
+                  className="px-6 py-2 bg-card border border-border rounded-xl text-sm font-medium text-muted-foreground disabled:opacity-50 disabled:cursor-not-allowed hover:bg-muted transition-all"
                 >
                   Previous
                 </button>
@@ -267,7 +267,7 @@ export default function AllPlansPage() {
                 <button
                   onClick={() => handlePageChange(page + 1)}
                   disabled={!pagination.hasNextPage}
-                  className="px-6 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-400 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 dark:hover:bg-slate-800 transition-all"
+                  className="px-6 py-2 bg-card border border-border rounded-xl text-sm font-medium text-muted-foreground disabled:opacity-50 disabled:cursor-not-allowed hover:bg-muted transition-all"
                 >
                   Next
                 </button>
