@@ -3,19 +3,17 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { BookOpen, Clock, CheckCircle2, ArrowRight } from "lucide-react";
 import {
-  BookOpen,
-  Clock,
-  CheckCircle2,
-  ArrowRight,
-  Trash2,
-  Loader2,
-  Edit,
-} from "lucide-react";
-import { getInstances, deleteInstance, formatTime } from "@/lib/api";
+  getInstances,
+  deleteInstance,
+  updateInstance,
+  formatTime,
+} from "@/lib/api";
 import useAuth from "@/hooks/useAuth";
 import { toast } from "sonner";
 import EditInstanceModal from "@/components/EditInstanceModal";
+import InstanceCardMenu from "@/components/InstanceCardMenu";
 
 export default function MyInstancesPage() {
   const router = useRouter();
@@ -25,6 +23,18 @@ export default function MyInstancesPage() {
   const [deletingId, setDeletingId] = useState(null);
   const [editingInstance, setEditingInstance] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [statusFilter, setStatusFilter] = useState("active");
+  const [updatingId, setUpdatingId] = useState(null);
+
+  const getStatus = (i) => i.status || "active";
+  const isCompleted = (i) =>
+    i.totalResources > 0 && (i.resourcePercent || 0) >= 100;
+  // Derived "view": completed = active course at 100%; otherwise the raw status.
+  const viewOf = (i) => {
+    const s = getStatus(i);
+    if (s !== "active") return s;
+    return isCompleted(i) ? "completed" : "active";
+  };
 
   useEffect(() => {
     if (authLoading) {
@@ -84,9 +94,49 @@ export default function MyInstancesPage() {
     );
   };
 
+  const handleSetStatus = async (id, status) => {
+    const prevInstances = instances;
+    try {
+      setUpdatingId(id);
+      // Optimistic update
+      setInstances((prev) =>
+        prev.map((inst) => (inst._id === id ? { ...inst, status } : inst))
+      );
+      await updateInstance(id, { status }, token);
+      const labels = { active: "resumed", paused: "paused", dropped: "dropped" };
+      toast.success(`Course ${labels[status] || "updated"}`);
+    } catch (error) {
+      console.error("Error updating status:", error);
+      toast.error("Failed to update course");
+      setInstances(prevInstances); // rollback
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
   if (!user) {
     return null;
   }
+
+  const STATUS_TABS = [
+    { key: "active", label: "Active" },
+    { key: "completed", label: "Completed" },
+    { key: "paused", label: "Paused" },
+    { key: "dropped", label: "Dropped" },
+    { key: "all", label: "All" },
+  ];
+  const counts = instances.reduce(
+    (acc, i) => {
+      acc[viewOf(i)] = (acc[viewOf(i)] || 0) + 1;
+      acc.all += 1;
+      return acc;
+    },
+    { active: 0, completed: 0, paused: 0, dropped: 0, all: 0 }
+  );
+  const filtered =
+    statusFilter === "all"
+      ? instances
+      : instances.filter((i) => viewOf(i) === statusFilter);
 
   return (
     <div className="min-h-screen bg-linear-to-br from-background via-primary/5 to-background py-12">
@@ -146,24 +196,59 @@ export default function MyInstancesPage() {
             </Link>
           </div>
         ) : (
-          /* Instances Grid */
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {instances.map((instance) => {
+          <>
+            {/* Status filter tabs */}
+            <div className="flex flex-wrap gap-2 mb-6">
+              {STATUS_TABS.map((tab) => (
+                <button
+                  key={tab.key}
+                  onClick={() => setStatusFilter(tab.key)}
+                  className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                    statusFilter === tab.key
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-card border border-border text-muted-foreground hover:text-foreground hover:bg-muted"
+                  }`}
+                >
+                  {tab.label}
+                  <span className="ml-1.5 opacity-70">{counts[tab.key] ?? 0}</span>
+                </button>
+              ))}
+            </div>
+
+            {filtered.length === 0 ? (
+              <div className="bg-card border-2 border-dashed border-border rounded-2xl p-12 text-center text-muted-foreground">
+                No courses in this view.
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filtered.map((instance) => {
               const progressPercent = instance.resourcePercent || 0;
               const timePercent = instance.timePercent || 0;
+              const status = getStatus(instance);
+              const completed = isCompleted(instance);
 
               return (
                 <div
                   key={instance._id}
-                  className="group bg-card border border-border rounded-2xl overflow-hidden hover:shadow-lg hover:border-primary/50 transition-all"
+                  className={`group bg-card border border-border rounded-2xl overflow-hidden hover:shadow-lg hover:border-primary/50 transition-all ${
+                    status !== "active" ? "opacity-70 hover:opacity-100" : ""
+                  }`}
                 >
                   {/* Header accent */}
-                  <div className="h-1 bg-primary group-hover:h-2 transition-all" />
+                  <div
+                    className={`h-1 transition-all group-hover:h-2 ${
+                      status !== "active"
+                        ? "bg-muted-foreground/40"
+                        : completed
+                          ? "bg-success"
+                          : "bg-primary"
+                    }`}
+                  />
 
                   {/* Header */}
                   <div className="p-6">
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="flex-1">
+                    <div className="flex items-start justify-between mb-3 gap-2">
+                      <div className="flex-1 min-w-0">
                         <h3 className="text-lg font-bold text-foreground mb-2 line-clamp-2 group-hover:text-primary transition-colors">
                           {(() => {
                             const courseCode = instance.studyPlan?.courseCode || "General";
@@ -171,32 +256,32 @@ export default function MyInstancesPage() {
                             return courseCode !== "General" ? `${courseCode} - ${title}` : title;
                           })()}
                         </h3>
+                        {status !== "active" ? (
+                          <span
+                            className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                              status === "paused"
+                                ? "bg-warning/15 text-warning-foreground"
+                                : "bg-muted text-muted-foreground"
+                            }`}
+                          >
+                            {status === "paused" ? "Paused" : "Dropped"}
+                          </span>
+                        ) : completed ? (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-success/15 text-success">
+                            <CheckCircle2 className="h-3 w-3" /> Completed
+                          </span>
+                        ) : null}
                       </div>
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={(e) => {
-                            e.preventDefault();
-                            handleEdit(instance);
-                          }}
-                          className="text-muted-foreground hover:text-primary transition-colors"
-                        >
-                          <Edit className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            e.preventDefault();
-                            handleDelete(instance._id);
-                          }}
-                          className="text-muted-foreground hover:text-destructive transition-colors"
-                          disabled={deletingId === instance._id}
-                        >
-                          {deletingId === instance._id ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                          ) : (
-                            <Trash2 className="h-4 w-4" />
-                          )}
-                        </button>
-                      </div>
+                      <InstanceCardMenu
+                        status={status}
+                        busy={
+                          updatingId === instance._id ||
+                          deletingId === instance._id
+                        }
+                        onEdit={() => handleEdit(instance)}
+                        onDelete={() => handleDelete(instance._id)}
+                        onSetStatus={(s) => handleSetStatus(instance._id, s)}
+                      />
                     </div>
 
                     {instance.notes && (
@@ -283,8 +368,10 @@ export default function MyInstancesPage() {
                   </div>
                 </div>
               );
-            })}
-          </div>
+                })}
+              </div>
+            )}
+          </>
         )}
       </div>
 

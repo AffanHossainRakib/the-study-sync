@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
@@ -14,16 +14,32 @@ import {
   PlayCircle,
   Clock,
   CheckCircle2,
+  Flame,
+  GraduationCap,
+  TrendingUp,
+  Activity,
 } from "lucide-react";
-import { getInstances } from "@/lib/api";
+import { getInstances, getUserProgress } from "@/lib/api";
 import useAuth from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
+import StatCard from "@/components/dashboard/StatCard";
+import ActivityChart from "@/components/dashboard/ActivityChart";
+import ProgressDonut from "@/components/dashboard/ProgressDonut";
+
+const ACTIVITY_DAYS = 30;
+
+const dayKey = (d) => {
+  const dt = new Date(d);
+  dt.setHours(0, 0, 0, 0);
+  return dt.toISOString().slice(0, 10);
+};
 
 export default function DashboardPage() {
   const router = useRouter();
   const { user, token, loading: authLoading } = useAuth();
   const [instances, setInstances] = useState([]);
+  const [progress, setProgress] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -42,8 +58,12 @@ export default function DashboardPage() {
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
-      const instancesResponse = await getInstances(token);
-      setInstances(instancesResponse.instances || []);
+      const [instancesRes, progressRes] = await Promise.all([
+        getInstances(token),
+        getUserProgress(token).catch(() => ({ progress: [] })),
+      ]);
+      setInstances(instancesRes.instances || []);
+      setProgress(progressRes.progress || []);
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
       toast.error("Failed to load dashboard data");
@@ -52,9 +72,118 @@ export default function DashboardPage() {
     }
   };
 
-  const getUpcomingDeadlines = () => {
-    return instances
-      .filter((inst) => inst.deadline)
+  const getDisplayTitle = (instance) => {
+    const courseCode = instance.studyPlan?.courseCode || "General";
+    const title = instance.customTitle || instance.studyPlan?.title;
+    return courseCode !== "General" ? `${courseCode} - ${title}` : title;
+  };
+
+  // Only "active" courses count toward the dashboard (paused/dropped excluded).
+  const activeInstances = useMemo(
+    () => instances.filter((i) => (i.status || "active") === "active"),
+    [instances],
+  );
+
+  // ---- Derived metrics ----------------------------------------------------
+  const stats = useMemo(() => {
+    const completedRecords = progress.filter(
+      (p) => p.completed && p.completedAt,
+    );
+
+    // Completions bucketed by day
+    const counts = {};
+    completedRecords.forEach((p) => {
+      const k = dayKey(p.completedAt);
+      counts[k] = (counts[k] || 0) + 1;
+    });
+
+    // Activity series for the last N days
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const activity = [];
+    for (let i = ACTIVITY_DAYS - 1; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+      const k = dayKey(d);
+      activity.push({
+        key: k,
+        label: d.toLocaleDateString(undefined, {
+          month: "short",
+          day: "numeric",
+        }),
+        count: counts[k] || 0,
+      });
+    }
+
+    // This week's completions (last 7 days)
+    const weekAgo = new Date(today);
+    weekAgo.setDate(weekAgo.getDate() - 6);
+    const thisWeek = completedRecords.filter(
+      (p) => new Date(p.completedAt) >= weekAgo,
+    ).length;
+
+    // Streaks (consecutive days with at least one completion)
+    const daySet = new Set(Object.keys(counts));
+    const keyOf = (dt) => dt.toISOString().slice(0, 10);
+    let currentStreak = 0;
+    const cursor = new Date(today);
+    if (!daySet.has(keyOf(cursor))) cursor.setDate(cursor.getDate() - 1);
+    while (daySet.has(keyOf(cursor))) {
+      currentStreak++;
+      cursor.setDate(cursor.getDate() - 1);
+    }
+    let bestStreak = 0;
+    const sortedDays = Array.from(daySet).sort();
+    let run = 0;
+    let prev = null;
+    sortedDays.forEach((k) => {
+      if (prev) {
+        const diff = (new Date(k) - new Date(prev)) / 86400000;
+        run = diff === 1 ? run + 1 : 1;
+      } else {
+        run = 1;
+      }
+      bestStreak = Math.max(bestStreak, run);
+      prev = k;
+    });
+
+    const activeCourses = activeInstances.filter(
+      (i) => (i.resourcePercent || 0) < 100,
+    ).length;
+    const completedCourses = activeInstances.filter(
+      (i) => i.totalResources > 0 && (i.resourcePercent || 0) >= 100,
+    ).length;
+
+    const sumCompleted = activeInstances.reduce(
+      (s, i) => s + (i.completedResources || 0),
+      0,
+    );
+    const sumTotal = activeInstances.reduce(
+      (s, i) => s + (i.totalResources || 0),
+      0,
+    );
+    const overall = sumTotal > 0 ? Math.round((sumCompleted / sumTotal) * 100) : 0;
+
+    return {
+      activity,
+      thisWeek,
+      currentStreak,
+      bestStreak,
+      resourcesCompleted: completedRecords.length,
+      activeCourses,
+      completedCourses,
+      overall,
+      hasActivity: completedRecords.length > 0,
+    };
+  }, [activeInstances, progress]);
+
+  const deadlines = useMemo(() => {
+    return activeInstances
+      .filter(
+        (inst) =>
+          inst.deadline &&
+          !(inst.totalResources > 0 && (inst.resourcePercent || 0) >= 100),
+      )
       .map((inst) => ({
         ...inst,
         daysUntil: Math.ceil(
@@ -63,14 +192,16 @@ export default function DashboardPage() {
       }))
       .filter((inst) => inst.daysUntil >= 0)
       .sort((a, b) => a.daysUntil - b.daysUntil)
-      .slice(0, 3);
-  };
+      .slice(0, 4);
+  }, [activeInstances]);
 
-  const getDisplayTitle = (instance) => {
-    const courseCode = instance.studyPlan?.courseCode || "General";
-    const title = instance.customTitle || instance.studyPlan?.title;
-    return courseCode !== "General" ? `${courseCode} - ${title}` : title;
-  };
+  const courseProgress = useMemo(
+    () =>
+      [...activeInstances]
+        .sort((a, b) => (b.resourcePercent || 0) - (a.resourcePercent || 0))
+        .slice(0, 6),
+    [activeInstances],
+  );
 
   if (authLoading || loading) {
     return (
@@ -80,9 +211,11 @@ export default function DashboardPage() {
     );
   }
 
-  const lastAccessedInstance = instances[0];
-  const otherInstances = instances.slice(1);
-  const deadlines = getUpcomingDeadlines();
+  // "Continue Learning" should surface something still in progress.
+  const inProgressInstances = activeInstances.filter(
+    (i) => !(i.totalResources > 0 && (i.resourcePercent || 0) >= 100),
+  );
+  const lastAccessedInstance = inProgressInstances[0];
 
   return (
     <div className="min-h-screen bg-linear-to-br from-background via-primary/5 to-background">
@@ -106,7 +239,7 @@ export default function DashboardPage() {
           </Link>
         </div>
 
-        {instances.length === 0 ? (
+        {activeInstances.length === 0 ? (
           <div className="bg-card border-2 border-dashed border-border rounded-2xl p-12 text-center">
             <div className="bg-primary/10 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
               <AlertCircle className="w-10 h-10 text-primary" />
@@ -134,22 +267,89 @@ export default function DashboardPage() {
             </div>
           </div>
         ) : (
-          <div className="space-y-8">
-            {/* Top Section: Continue Learning & Deadlines */}
+          <div className="space-y-6">
+            {/* KPI Row */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+              <StatCard
+                icon={GraduationCap}
+                label="Active Courses"
+                value={stats.activeCourses}
+                accent="primary"
+              />
+              <StatCard
+                icon={CheckCircle2}
+                label="Courses Completed"
+                value={stats.completedCourses}
+                accent="success"
+              />
+              <StatCard
+                icon={Target}
+                label="Resources Completed"
+                value={stats.resourcesCompleted}
+                accent="info"
+                hint={`${stats.thisWeek} this week`}
+              />
+              <StatCard
+                icon={Flame}
+                label="Day Streak"
+                value={stats.currentStreak}
+                accent="warning"
+                hint={`Best: ${stats.bestStreak} ${
+                  stats.bestStreak === 1 ? "day" : "days"
+                }`}
+              />
+            </div>
+
+            {/* Activity + Overall progress */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Continue Learning - Takes up 2 columns */}
+              <div className="lg:col-span-2 bg-card border border-border rounded-2xl p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
+                    <Activity className="w-5 h-5 text-primary" />
+                    Activity
+                  </h2>
+                  <span className="text-xs text-muted-foreground">
+                    Last {ACTIVITY_DAYS} days
+                  </span>
+                </div>
+                {stats.hasActivity ? (
+                  <ActivityChart data={stats.activity} />
+                ) : (
+                  <div className="h-[220px] flex flex-col items-center justify-center text-center">
+                    <TrendingUp className="w-8 h-8 text-muted-foreground/50 mb-2" />
+                    <p className="text-sm text-muted-foreground">
+                      Complete resources to see your activity here
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              <div className="bg-card border border-border rounded-2xl p-6 flex flex-col">
+                <h2 className="text-lg font-bold text-foreground flex items-center gap-2 mb-2">
+                  <Target className="w-5 h-5 text-primary" />
+                  Overall Progress
+                </h2>
+                <div className="flex-1 flex items-center justify-center">
+                  <ProgressDonut value={stats.overall} label="of all resources" />
+                </div>
+              </div>
+            </div>
+
+            {/* Continue Learning + Deadlines */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Continue Learning */}
               <div className="lg:col-span-2 space-y-4">
-                <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
+                <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
                   <PlayCircle className="w-5 h-5 text-primary" />
                   Continue Learning
                 </h2>
 
-                <Link
+                {lastAccessedInstance ? (
+                  <Link
                   href={`/instances/${lastAccessedInstance._id}`}
                   className="block bg-card border border-border rounded-2xl p-6 shadow-sm hover:shadow-md transition-all group relative overflow-hidden"
                 >
                   <div className="absolute top-0 left-0 w-1 h-full bg-primary" />
-
                   <div className="flex flex-col sm:flex-row gap-6">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
@@ -172,7 +372,7 @@ export default function DashboardPage() {
                       </h3>
 
                       <p className="text-muted-foreground mb-6 line-clamp-2">
-                        {lastAccessedInstance.studyPlanId?.shortDescription}
+                        {lastAccessedInstance.studyPlan?.shortDescription}
                       </p>
 
                       <div className="flex items-center gap-6 text-sm">
@@ -189,7 +389,7 @@ export default function DashboardPage() {
                             {Math.round(
                               (lastAccessedInstance.completedTime || 0) / 60,
                             )}
-                            h spent
+                            h done
                           </span>
                         </div>
                       </div>
@@ -197,13 +397,9 @@ export default function DashboardPage() {
 
                     <div className="sm:w-48 flex flex-col justify-center">
                       <div className="mb-2 flex justify-between text-sm font-medium">
-                        <span className="text-foreground">
-                          Progress
-                        </span>
+                        <span className="text-foreground">Progress</span>
                         <span className="text-primary">
-                          {Math.round(
-                            lastAccessedInstance.resourcePercent || 0,
-                          )}
+                          {Math.round(lastAccessedInstance.resourcePercent || 0)}
                           %
                         </span>
                       </div>
@@ -215,18 +411,36 @@ export default function DashboardPage() {
                           }}
                         />
                       </div>
-                      <button className="w-full py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors flex items-center justify-center gap-2">
+                      <span className="w-full py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors flex items-center justify-center gap-2">
                         Resume
                         <ArrowRight className="w-4 h-4" />
-                      </button>
+                      </span>
                     </div>
                   </div>
-                </Link>
+                  </Link>
+                ) : (
+                  <div className="bg-card border border-border rounded-2xl p-8 text-center">
+                    <CheckCircle2 className="w-10 h-10 text-success mx-auto mb-3" />
+                    <h3 className="text-lg font-bold text-foreground mb-1">
+                      You&apos;re all caught up!
+                    </h3>
+                    <p className="text-muted-foreground text-sm mb-4">
+                      No courses in progress right now.
+                    </p>
+                    <Link
+                      href="/plans"
+                      className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
+                    >
+                      Browse Plans
+                      <ArrowRight className="w-4 h-4" />
+                    </Link>
+                  </div>
+                )}
               </div>
 
-              {/* Deadlines - Takes up 1 column */}
+              {/* Deadlines */}
               <div className="space-y-4">
-                <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
+                <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
                   <Calendar className="w-5 h-5 text-primary" />
                   Upcoming Deadlines
                 </h2>
@@ -252,7 +466,7 @@ export default function DashboardPage() {
                           >
                             {instance.daysUntil === 0
                               ? "Today"
-                              : `${instance.daysUntil} days`}
+                              : `${instance.daysUntil}d`}
                           </span>
                         </div>
                         <div className="text-xs text-muted-foreground">
@@ -272,64 +486,56 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            {/* Other Active Plans Grid */}
-            {otherInstances.length > 0 && (
-              <div>
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
-                    <Target className="w-5 h-5 text-primary" />
-                    Your Courses
-                  </h2>
-                  <Link
-                    href="/instances"
-                    className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
-                  >
-                    View All <ArrowRight className="w-4 h-4" />
-                  </Link>
-                </div>
+            {/* Course Progress */}
+            <div className="bg-card border border-border rounded-2xl p-6">
+              <div className="flex items-center justify-between mb-5">
+                <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
+                  <TrendingUp className="w-5 h-5 text-primary" />
+                  Course Progress
+                </h2>
+                <Link
+                  href="/instances"
+                  className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
+                >
+                  View All <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {otherInstances.slice(0, 6).map((instance) => (
+              <div className="space-y-4">
+                {courseProgress.map((instance) => {
+                  const pct = Math.round(instance.resourcePercent || 0);
+                  return (
                     <Link
                       key={instance._id}
                       href={`/instances/${instance._id}`}
-                      className="group bg-card border border-border rounded-xl overflow-hidden hover:shadow-lg transition-all"
+                      className="block group"
                     >
-                      <div className="h-1 bg-muted group-hover:bg-primary transition-colors" />
-                      <div className="p-5">
-                        <div className="mb-4">
-                          <h3 className="font-bold text-foreground mb-1 line-clamp-1 group-hover:text-primary transition-colors">
-                            {getDisplayTitle(instance)}
-                          </h3>
-                          <div className="flex items-center justify-between text-xs text-muted-foreground">
-                            <span>
-                              {instance.completedResources}/
-                              {instance.totalResources} Resources
-                            </span>
-                            <span>
-                              {Math.round(instance.resourcePercent || 0)}%
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-primary transition-all duration-300"
-                            style={{
-                              width: `${instance.resourcePercent || 0}%`,
-                            }}
-                          />
-                        </div>
+                      <div className="flex items-center justify-between mb-1.5 text-sm">
+                        <span className="font-medium text-foreground truncate pr-3 group-hover:text-primary transition-colors">
+                          {getDisplayTitle(instance)}
+                        </span>
+                        <span className="text-muted-foreground shrink-0 tabular-nums">
+                          {instance.completedResources}/
+                          {instance.totalResources} · {pct}%
+                        </span>
+                      </div>
+                      <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
+                        <div
+                          className={`h-full rounded-full transition-all duration-500 ${
+                            pct >= 100 ? "bg-success" : "bg-primary"
+                          }`}
+                          style={{ width: `${pct}%` }}
+                        />
                       </div>
                     </Link>
-                  ))}
-                </div>
+                  );
+                })}
               </div>
-            )}
+            </div>
 
-            {/* Quick Actions (Compact) */}
-            <div className="pt-4 border-t border-border">
-              <h3 className="text-sm font-semibold text-muted-foreground mb-4 uppercase tracking-wider">
+            {/* Quick Actions */}
+            <div className="pt-2 border-t border-border">
+              <h3 className="text-sm font-semibold text-muted-foreground mb-4 mt-4 uppercase tracking-wider">
                 Quick Actions
               </h3>
               <div className="flex flex-wrap gap-4">
