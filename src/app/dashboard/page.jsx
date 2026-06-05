@@ -27,7 +27,13 @@ import StatCard from "@/components/dashboard/StatCard";
 import ActivityChart from "@/components/dashboard/ActivityChart";
 import ProgressDonut from "@/components/dashboard/ProgressDonut";
 
-const ACTIVITY_DAYS = 30;
+const RANGES = [
+  { key: "1", label: "1D" },
+  { key: "7", label: "7D" },
+  { key: "15", label: "15D" },
+  { key: "30", label: "30D" },
+  { key: "custom", label: "Custom" },
+];
 
 const dayKey = (d) => {
   const dt = new Date(d);
@@ -41,6 +47,9 @@ export default function DashboardPage() {
   const [instances, setInstances] = useState([]);
   const [progress, setProgress] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [rangeKey, setRangeKey] = useState("7");
+  const [customFrom, setCustomFrom] = useState("");
+  const [customTo, setCustomTo] = useState("");
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -97,23 +106,8 @@ export default function DashboardPage() {
       counts[k] = (counts[k] || 0) + 1;
     });
 
-    // Activity series for the last N days
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    const activity = [];
-    for (let i = ACTIVITY_DAYS - 1; i >= 0; i--) {
-      const d = new Date(today);
-      d.setDate(d.getDate() - i);
-      const k = dayKey(d);
-      activity.push({
-        key: k,
-        label: d.toLocaleDateString(undefined, {
-          month: "short",
-          day: "numeric",
-        }),
-        count: counts[k] || 0,
-      });
-    }
 
     // This week's completions (last 7 days)
     const weekAgo = new Date(today);
@@ -165,7 +159,6 @@ export default function DashboardPage() {
     const overall = sumTotal > 0 ? Math.round((sumCompleted / sumTotal) * 100) : 0;
 
     return {
-      activity,
       thisWeek,
       currentStreak,
       bestStreak,
@@ -173,9 +166,100 @@ export default function DashboardPage() {
       activeCourses,
       completedCourses,
       overall,
-      hasActivity: completedRecords.length > 0,
     };
   }, [activeInstances, progress]);
+
+  // Activity series driven by the selected time range.
+  const activityData = useMemo(() => {
+    const records = progress.filter((p) => p.completed && p.completedAt);
+
+    const dailyCounts = {};
+    records.forEach((p) => {
+      const k = dayKey(p.completedAt);
+      dailyCounts[k] = (dailyCounts[k] || 0) + 1;
+    });
+
+    const buildDaily = (start, end) => {
+      const out = [];
+      const d = new Date(start);
+      d.setHours(0, 0, 0, 0);
+      const last = new Date(end);
+      last.setHours(0, 0, 0, 0);
+      let guard = 0;
+      while (d <= last && guard < 400) {
+        const k = dayKey(d);
+        out.push({
+          key: k,
+          label: d.toLocaleDateString(undefined, {
+            month: "short",
+            day: "numeric",
+          }),
+          count: dailyCounts[k] || 0,
+        });
+        d.setDate(d.getDate() + 1);
+        guard++;
+      }
+      return out;
+    };
+
+    const buildHourly = () => {
+      const now = new Date();
+      const hourCounts = {};
+      records.forEach((p) => {
+        const dt = new Date(p.completedAt);
+        if (now - dt <= 24 * 3600 * 1000 && dt <= now) {
+          const hk = `${dayKey(dt)}-${dt.getHours()}`;
+          hourCounts[hk] = (hourCounts[hk] || 0) + 1;
+        }
+      });
+      const out = [];
+      for (let i = 23; i >= 0; i--) {
+        const dt = new Date(now.getTime() - i * 3600 * 1000);
+        const hk = `${dayKey(dt)}-${dt.getHours()}`;
+        out.push({
+          key: hk,
+          label: dt.toLocaleTimeString(undefined, { hour: "numeric" }),
+          count: hourCounts[hk] || 0,
+        });
+      }
+      return out;
+    };
+
+    let data = [];
+    let rangeLabel = "";
+    if (rangeKey === "custom") {
+      rangeLabel = "Custom range";
+      if (customFrom && customTo && new Date(customFrom) <= new Date(customTo)) {
+        data = buildDaily(customFrom, customTo);
+      }
+    } else {
+      const days = Number(rangeKey);
+      if (days <= 1) {
+        data = buildHourly();
+        rangeLabel = "Last 24 hours";
+      } else {
+        const end = new Date();
+        const start = new Date();
+        start.setDate(start.getDate() - (days - 1));
+        data = buildDaily(start, end);
+        rangeLabel = `Last ${days} days`;
+      }
+    }
+
+    const total = data.reduce((s, d) => s + d.count, 0);
+    return { data, total, rangeLabel };
+  }, [progress, rangeKey, customFrom, customTo]);
+
+  const selectRange = (key) => {
+    if (key === "custom" && !customFrom && !customTo) {
+      const today = new Date();
+      const weekAgo = new Date();
+      weekAgo.setDate(weekAgo.getDate() - 6);
+      setCustomFrom(weekAgo.toISOString().slice(0, 10));
+      setCustomTo(today.toISOString().slice(0, 10));
+    }
+    setRangeKey(key);
+  };
 
   const deadlines = useMemo(() => {
     return activeInstances
@@ -303,22 +387,65 @@ export default function DashboardPage() {
             {/* Activity + Overall progress */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2 bg-card border border-border rounded-2xl p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
-                    <Activity className="w-5 h-5 text-primary" />
-                    Activity
-                  </h2>
-                  <span className="text-xs text-muted-foreground">
-                    Last {ACTIVITY_DAYS} days
-                  </span>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+                  <div>
+                    <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
+                      <Activity className="w-5 h-5 text-primary" />
+                      Activity
+                    </h2>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {activityData.total}{" "}
+                      {activityData.total === 1 ? "resource" : "resources"} ·{" "}
+                      {activityData.rangeLabel}
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    {RANGES.map((r) => (
+                      <button
+                        key={r.key}
+                        onClick={() => selectRange(r.key)}
+                        className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${
+                          rangeKey === r.key
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-muted text-muted-foreground hover:text-foreground"
+                        }`}
+                      >
+                        {r.label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-                {stats.hasActivity ? (
-                  <ActivityChart data={stats.activity} />
+
+                {rangeKey === "custom" && (
+                  <div className="flex flex-wrap items-center gap-2 mb-4">
+                    <input
+                      type="date"
+                      value={customFrom}
+                      max={customTo || new Date().toISOString().slice(0, 10)}
+                      onChange={(e) => setCustomFrom(e.target.value)}
+                      className="px-3 py-1.5 text-sm border border-input bg-background text-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
+                    />
+                    <span className="text-sm text-muted-foreground">to</span>
+                    <input
+                      type="date"
+                      value={customTo}
+                      min={customFrom || undefined}
+                      max={new Date().toISOString().slice(0, 10)}
+                      onChange={(e) => setCustomTo(e.target.value)}
+                      className="px-3 py-1.5 text-sm border border-input bg-background text-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
+                    />
+                  </div>
+                )}
+
+                {activityData.total > 0 ? (
+                  <ActivityChart data={activityData.data} />
                 ) : (
                   <div className="h-[220px] flex flex-col items-center justify-center text-center">
                     <TrendingUp className="w-8 h-8 text-muted-foreground/50 mb-2" />
                     <p className="text-sm text-muted-foreground">
-                      Complete resources to see your activity here
+                      {rangeKey === "custom" && !(customFrom && customTo)
+                        ? "Pick a start and end date"
+                        : "No activity in this range"}
                     </p>
                   </div>
                 )}
