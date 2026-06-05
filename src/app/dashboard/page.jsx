@@ -352,72 +352,17 @@ export default function DashboardPage() {
           </div>
         ) : (
           <div className="space-y-6">
-            {/* KPI Row */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-              <StatCard
-                icon={GraduationCap}
-                label="Active Courses"
-                value={stats.activeCourses}
-                accent="primary"
-              />
-              <StatCard
-                icon={CheckCircle2}
-                label="Courses Completed"
-                value={stats.completedCourses}
-                accent="success"
-              />
-              <StatCard
-                icon={Target}
-                label="Resources Completed"
-                value={stats.resourcesCompleted}
-                accent="info"
-                hint={`${stats.thisWeek} this week`}
-              />
-              <StatCard
-                icon={Flame}
-                label="Day Streak"
-                value={stats.currentStreak}
-                accent="warning"
-                hint={`Best: ${stats.bestStreak} ${
-                  stats.bestStreak === 1 ? "day" : "days"
-                }`}
-              />
-            </div>
-
-            {/* Activity + Overall progress */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <div className="lg:col-span-2 bg-card border border-border rounded-2xl p-6">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-                  <div>
-                    <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
-                      <Activity className="w-5 h-5 text-primary" />
-                      Activity
-                    </h2>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {activityData.total}{" "}
-                      {activityData.total === 1 ? "resource" : "resources"} ·{" "}
-                      {activityData.rangeLabel}
-                    </p>
-                  </div>
-                  <div className="flex flex-wrap items-center gap-1.5">
-                    {RANGES.map((r) => (
-                      <button
-                        key={r.key}
-                        onClick={() => selectRange(r.key)}
-                        className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${
-                          rangeKey === r.key
-                            ? "bg-primary text-primary-foreground"
-                            : "bg-muted text-muted-foreground hover:text-foreground"
-                        }`}
-                      >
-                        {r.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
+            {/* Time-range toolbar (drives Activity chart + Resources KPI) */}
+            <div className="flex flex-col gap-3 bg-card border border-border rounded-2xl p-4 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-sm text-muted-foreground">
+                Showing activity for{" "}
+                <span className="font-medium text-foreground">
+                  {activityData.rangeLabel}
+                </span>
+              </p>
+              <div className="flex flex-wrap items-center gap-2">
                 {rangeKey === "custom" && (
-                  <div className="flex flex-wrap items-center gap-2 mb-4">
+                  <div className="flex flex-wrap items-center gap-2">
                     <input
                       type="date"
                       value={customFrom}
@@ -436,6 +381,68 @@ export default function DashboardPage() {
                     />
                   </div>
                 )}
+                <div className="flex flex-wrap items-center gap-1.5">
+                  {RANGES.map((r) => (
+                    <button
+                      key={r.key}
+                      onClick={() => selectRange(r.key)}
+                      className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+                        rangeKey === r.key
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-muted text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      {r.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* KPI Row */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+              <StatCard
+                icon={GraduationCap}
+                label="Active Courses"
+                value={stats.activeCourses}
+                accent="primary"
+              />
+              <StatCard
+                icon={CheckCircle2}
+                label="Courses Completed"
+                value={stats.completedCourses}
+                accent="success"
+              />
+              <StatCard
+                icon={Target}
+                label="Resources Completed"
+                value={activityData.total}
+                accent="info"
+                hint={activityData.rangeLabel}
+              />
+              <StatCard
+                icon={Flame}
+                label="Day Streak"
+                value={stats.currentStreak}
+                accent="warning"
+                hint={`Best: ${stats.bestStreak} ${
+                  stats.bestStreak === 1 ? "day" : "days"
+                }`}
+              />
+            </div>
+
+            {/* Activity + Overall progress */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2 bg-card border border-border rounded-2xl p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
+                    <Activity className="w-5 h-5 text-primary" />
+                    Activity
+                  </h2>
+                  <span className="text-xs text-muted-foreground">
+                    {activityData.rangeLabel}
+                  </span>
+                </div>
 
                 {activityData.total > 0 ? (
                   <ActivityChart data={activityData.data} />
