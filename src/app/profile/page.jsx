@@ -276,7 +276,7 @@ const ProfilePage = () => {
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="mb-6 p-4 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-lg text-red-600 dark:text-red-400 text-sm"
+              className="mb-6 p-4 bg-destructive/10 border border-destructive/30 rounded-lg text-destructive text-sm"
             >
               {error}
             </motion.div>
@@ -286,7 +286,7 @@ const ProfilePage = () => {
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="mb-6 p-4 bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded-lg text-green-600 dark:text-green-400 text-sm"
+              className="mb-6 p-4 bg-success/10 border border-success/30 rounded-lg text-success text-sm"
             >
               {success}
             </motion.div>
@@ -298,7 +298,7 @@ const ProfilePage = () => {
             className="bg-card border border-border rounded-2xl shadow-lg overflow-hidden"
           >
             {/* Header with gradient */}
-            <div className="h-32 bg-gradient-to-r from-primary via-purple-500 to-pink-500 relative">
+            <div className="h-32 bg-linear-to-r from-primary via-info to-primary relative">
               <div className="absolute -bottom-16 left-6 sm:left-8">
                 <div className="relative">
                   {isEditing ? (
@@ -318,7 +318,7 @@ const ProfilePage = () => {
                   ) : null}
                   {!isEditing && (
                     <div
-                      className={`w-28 h-28 sm:w-32 sm:h-32 rounded-full bg-gradient-to-br from-primary to-purple-500 flex items-center justify-center border-4 border-card shadow-xl ${
+                      className={`w-28 h-28 sm:w-32 sm:h-32 rounded-full bg-linear-to-br from-primary to-info flex items-center justify-center border-4 border-card shadow-xl ${
                         photoURL ? "hidden" : ""
                       }`}
                     >
@@ -333,7 +333,7 @@ const ProfilePage = () => {
                 {!isEditing ? (
                   <button
                     onClick={() => setIsEditing(true)}
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-white/90 dark:bg-card/90 backdrop-blur-sm text-foreground rounded-lg shadow-lg hover:bg-white dark:hover:bg-card transition-all duration-300 hover:scale-105"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-card/90 backdrop-blur-sm text-foreground rounded-lg shadow-lg hover:bg-card transition-all duration-300 hover:scale-105"
                   >
                     <Edit2 className="h-4 w-4" />
                     <span className="hidden sm:inline">Edit Profile</span>
@@ -343,7 +343,7 @@ const ProfilePage = () => {
                     <button
                       onClick={handleCancel}
                       disabled={isSaving}
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-white/90 dark:bg-card/90 backdrop-blur-sm text-foreground rounded-lg shadow-lg hover:bg-white dark:hover:bg-card transition-all duration-300 disabled:opacity-50"
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-card/90 backdrop-blur-sm text-foreground rounded-lg shadow-lg hover:bg-card transition-all duration-300 disabled:opacity-50"
                     >
                       <X className="h-4 w-4" />
                       <span className="hidden sm:inline">Cancel</span>
@@ -439,7 +439,7 @@ const ProfilePage = () => {
                     <Shield className="h-4 w-4" />
                     <span>Account Status</span>
                   </div>
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400">
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success/15 text-success">
                     Active
                   </span>
                 </div>
@@ -568,7 +568,7 @@ const ProfilePage = () => {
                     className="group bg-card border border-border rounded-xl p-4 hover:shadow-lg hover:border-primary/50 transition-all duration-300"
                   >
                     <div className="flex items-start justify-between mb-2">
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-success/15 text-success">
                         Active
                       </span>
                       <Play className="h-4 w-4 text-muted-foreground" />
@@ -629,20 +629,20 @@ const ProfilePage = () => {
                   <div
                     className={`p-4 rounded-lg flex items-start gap-3 ${
                       settingsMessage.type === "success"
-                        ? "bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-900"
-                        : "bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900"
+                        ? "bg-success/10 border border-success/30"
+                        : "bg-destructive/10 border border-destructive/30"
                     }`}
                   >
                     {settingsMessage.type === "success" ? (
-                      <Check className="h-5 w-5 text-green-600 dark:text-green-400 shrink-0 mt-0.5" />
+                      <Check className="h-5 w-5 text-success shrink-0 mt-0.5" />
                     ) : (
-                      <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400 shrink-0 mt-0.5" />
+                      <AlertCircle className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
                     )}
                     <p
                       className={`text-sm ${
                         settingsMessage.type === "success"
-                          ? "text-green-800 dark:text-green-200"
-                          : "text-red-800 dark:text-red-200"
+                          ? "text-success"
+                          : "text-destructive"
                       }`}
                     >
                       {settingsMessage.text}

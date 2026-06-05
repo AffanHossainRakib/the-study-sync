@@ -338,12 +338,12 @@ export function LabFinder() {
 
             {resultMessage ? (
               <div className="mx-auto max-w-md">
-                <div className="rounded-xl bg-amber-500/10 border border-amber-500/30 p-6 text-center">
+                <div className="rounded-xl bg-warning/10 border border-warning/30 p-6 text-center">
                   <Clock
-                    className="mx-auto h-8 w-8 text-amber-600"
+                    className="mx-auto h-8 w-8 text-warning"
                     aria-hidden="true"
                   />
-                  <p className="mt-2 text-lg font-semibold text-amber-700 dark:text-amber-400">
+                  <p className="mt-2 text-lg font-semibold text-warning-foreground">
                     {resultMessage}
                   </p>
                 </div>

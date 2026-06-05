@@ -55,13 +55,13 @@ export default function ReviewForm() {
   };
 
   return (
-    <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-6 shadow-sm">
-      <h3 className="text-lg font-semibold mb-4 text-zinc-900 dark:text-zinc-100">
+    <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
+      <h3 className="text-lg font-semibold mb-4 text-foreground">
         Leave a Review
       </h3>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
+          <label className="block text-sm font-medium text-foreground mb-1">
             Rating
           </label>
           <div className="flex gap-1">
@@ -77,8 +77,8 @@ export default function ReviewForm() {
                 <Star
                   className={`w-6 h-6 ${
                     star <= (hoverRating || rating)
-                      ? "fill-yellow-400 text-yellow-400"
-                      : "text-zinc-300 dark:text-zinc-600"
+                      ? "fill-warning text-warning"
+                      : "text-muted-foreground"
                   }`}
                 />
               </button>
@@ -87,14 +87,14 @@ export default function ReviewForm() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
+          <label className="block text-sm font-medium text-foreground mb-1">
             Comment
           </label>
           <textarea
             value={comment}
             onChange={(e) => setComment(e.target.value)}
             placeholder="Share your experience..."
-            className="w-full px-3 py-2 bg-transparent border border-zinc-200 dark:border-zinc-800 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all min-h-25 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400"
+            className="w-full px-3 py-2 bg-transparent border border-border rounded-lg focus:ring-2 focus:ring-ring outline-none transition-all min-h-25 text-foreground placeholder:text-muted-foreground"
             required
           />
         </div>
