@@ -64,14 +64,14 @@ const SignupForm = ({
           <h1 className="text-3xl font-bold text-foreground">
             Create an account
           </h1>
-          <p className="text-gray-600 text-sm text-balance">
+          <p className="text-muted-foreground text-sm text-balance">
             Enter your details below to create a new account
           </p>
         </div>
 
         {/* Error Message */}
         {error && (
-          <Field className="text-sm text-red-600 bg-red-50 border border-red-200 p-3 rounded-lg">
+          <Field className="text-sm text-destructive bg-destructive/10 border border-destructive/30 p-3 rounded-lg">
             {error}
           </Field>
         )}
@@ -101,7 +101,7 @@ const SignupForm = ({
 
         <Field>
           <FieldLabel htmlFor="profilePicture">Profile Picture (Optional)</FieldLabel>
-          <FieldDescription className="text-xs text-gray-500 mb-2">
+          <FieldDescription className="text-xs text-muted-foreground mb-2">
             Upload an image or leave empty to use a default avatar
           </FieldDescription>
           <Input
@@ -117,7 +117,7 @@ const SignupForm = ({
               <img
                 src={imagePreview}
                 alt="Profile preview"
-                className="w-24 h-24 rounded-full object-cover border-2 border-indigo-200"
+                className="w-24 h-24 rounded-full object-cover border-2 border-border"
               />
             </div>
           )}

@@ -68,10 +68,11 @@
 
 - **Vercel Analytics** - Page view and performance monitoring
 
-### 🎨 Modern, Colorful UI
+### 🎨 Modern UI — "Deep Ocean" Design System
 
-- **Gradient Backgrounds** - Beautiful blue → purple → pink gradients
-- **Colorful Cards** - Each card has unique gradient accents
+- **Token-Driven Theming** - One source of truth: all colors are OKLCH CSS variables in `src/app/globals.css`, exposed via Tailwind v4 `@theme`. Rebrand the whole app by editing one file.
+- **Deep Ocean Palette** - Royal-blue primary with a cyan accent on cool slate neutrals
+- **Semantic Tokens** - `primary`, `card`, `muted`, `border`, plus status tokens `success` / `warning` / `info` / `destructive` (no hard-coded hex in pages)
 - **Smooth Animations** - Framer Motion for delightful interactions
 - **Dark/Light Mode** - Full theme support with next-themes
 - **Responsive Design** - Works perfectly on all devices
@@ -370,21 +371,23 @@ The application uses MongoDB with **5 main collections**:
 
 ## 🎨 UI Design System
 
-### Color Palette
+### Color Palette ("Deep Ocean")
 
-- **Gradients**: Blue → Purple → Pink for primary elements
-- **Stats Cards**: Blue, Purple, Green, Pink unique gradients
-- **Resource Types**: Red (YouTube), Blue (PDF), Green (Others)
-- **Progress Bars**: Smooth gradient animations
-- **Badges**: Colored, rounded, with appropriate backgrounds
+All colors are CSS variables defined once in `src/app/globals.css` (light + dark) and consumed through semantic Tailwind tokens — pages never hard-code hex/`slate-*` values.
+
+- **Primary**: Royal blue (`--primary`) for primary actions, links, and active states
+- **Accent / Info**: Cyan (`--accent` / `--info`) for highlights and secondary brand gradients
+- **Neutrals**: `background`, `card`, `muted`, `border`, `foreground`, `muted-foreground` (cool slate)
+- **Status**: `success` (emerald), `warning` (amber), `info` (cyan), `destructive` (red)
+- **Resource Types**: Red (YouTube), Blue (PDF), Green (Others) — a deliberate functional legend kept for content-type recognition
 
 ### Components
 
-- **Cards**: Rounded corners (rounded-2xl), shadows, hover effects
-- **Buttons**: Gradient backgrounds, scale animations on hover
-- **Progress Bars**: Gradient fills with smooth transitions
-- **Modals**: Backdrop blur, gradient titles, colored borders
-- **Empty States**: Dashed borders with gradient CTAs
+- **Cards**: `bg-card` + `border-border`, rounded corners, subtle shadows, hover lift
+- **Buttons**: Solid `primary` / `secondary` / outline variants (see `components/ui/button.jsx`)
+- **Progress Bars**: `primary` fills (and `primary → info` gradients) with smooth transitions
+- **Modals**: Backdrop blur, token-based surfaces and borders
+- **Empty States**: Dashed `border-border` with `primary` CTAs
 
 ## 🚧 Future Enhancements
 

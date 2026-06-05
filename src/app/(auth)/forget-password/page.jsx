@@ -73,7 +73,7 @@ const ForgetPassword = () => {
               reset your password.
             </FieldDescription>
             {error && (
-              <div className="text-sm text-red-600 bg-red-50 border border-red-200 p-3 rounded-lg">
+              <div className="text-sm text-destructive bg-destructive/10 border border-destructive/30 p-3 rounded-lg">
                 {error}
               </div>
             )}

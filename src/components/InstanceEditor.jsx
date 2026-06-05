@@ -79,7 +79,7 @@ const InstanceEditor = ({ instance, token, onUpdate }) => {
           </button>
           <button
             onClick={handleSave}
-            className="px-3 py-1.5 bg-green-600 text-white rounded-md hover:bg-green-700"
+            className="px-3 py-1.5 bg-success text-success-foreground rounded-md hover:bg-success/90"
           >
             Save
           </button>
@@ -99,7 +99,7 @@ const InstanceEditor = ({ instance, token, onUpdate }) => {
                 onChange={(e) => handleTitleChange(res._id, e.target.value)}
                 className="w-full bg-transparent focus:outline-none text-sm"
               />
-              <div className="text-xs text-slate-slate-500">
+              <div className="text-xs text-muted-foreground">
                 {getResourceTypeInfo(res.type).label} •{" "}
                 {formatTime(
                   res.type === "youtube-video"
@@ -113,7 +113,7 @@ const InstanceEditor = ({ instance, token, onUpdate }) => {
             </div>
             <button
               onClick={() => handleDelete(res._id)}
-              className="p-1 text-red-600 hover:bg-red-100 rounded"
+              className="p-1 text-destructive hover:bg-destructive/10 rounded"
               title="Delete"
             >
               <X className="h-4 w-4" />

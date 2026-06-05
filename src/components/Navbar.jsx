@@ -218,7 +218,7 @@ const Navbar = () => {
                           setIsMobileMenuOpen(false);
                           handleLogout();
                         }}
-                        className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-all"
+                        className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium text-destructive hover:bg-destructive/10 rounded-lg transition-all"
                       >
                         <LogOut className="h-4 w-4" />
                         Sign Out

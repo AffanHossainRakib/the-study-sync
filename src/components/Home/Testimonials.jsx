@@ -77,7 +77,7 @@ export default function Testimonials() {
                     className={`h-4 w-4 sm:h-5 sm:w-5 ${
                       i < testimonial.rating
                         ? "text-primary fill-primary"
-                        : "text-gray-300 dark:text-gray-600"
+                        : "text-muted-foreground"
                     }`}
                   />
                 ))}

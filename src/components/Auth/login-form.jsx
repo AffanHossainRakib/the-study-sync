@@ -55,13 +55,13 @@ const LoginForm = ({
           <h1 className="text-3xl font-bold text-foreground">
             Login to your account
           </h1>
-          <p className="text-gray-600 text-sm text-balance">
+          <p className="text-muted-foreground text-sm text-balance">
             Enter your email below to login to your account
           </p>
         </div>
         {/* Error Message */}
         {error && (
-          <Field className="text-sm text-red-600 bg-red-50 border border-red-200 p-3 rounded-lg">
+          <Field className="text-sm text-destructive bg-destructive/10 border border-destructive/30 p-3 rounded-lg">
             {error}
           </Field>
         )}

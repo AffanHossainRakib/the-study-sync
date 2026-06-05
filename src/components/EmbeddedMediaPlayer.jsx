@@ -290,7 +290,7 @@ export default function EmbeddedMediaPlayer({
       <div className="absolute top-0 left-0 right-0 z-10 bg-gradient-to-b from-black/80 to-transparent p-3 flex items-center justify-between opacity-0 hover:opacity-100 transition-opacity">
         <div className="flex items-center gap-2 text-white text-sm font-medium">
           {hasSavedProgress && !error && progress.percentage > 0 && (
-            <span className="px-2 py-0.5 bg-blue-500/80 rounded text-xs">
+            <span className="px-2 py-0.5 bg-primary/80 rounded text-xs">
               {Math.round(progress.percentage)}% watched
             </span>
           )}
@@ -312,7 +312,7 @@ export default function EmbeddedMediaPlayer({
       {loading && (
         <div className="absolute inset-0 flex items-center justify-center bg-slate-900 z-5">
           <div className="text-center">
-            <Loader2 className="h-10 w-10 text-blue-500 animate-spin mx-auto mb-3" />
+            <Loader2 className="h-10 w-10 text-primary animate-spin mx-auto mb-3" />
             <p className="text-white/80 text-sm">Loading...</p>
           </div>
         </div>
@@ -321,7 +321,7 @@ export default function EmbeddedMediaPlayer({
       {/* Error State */}
       {error && (
         <div className="flex flex-col items-center justify-center bg-slate-900 p-8 min-h-[300px] sm:min-h-[400px]">
-          <AlertCircle className="h-12 w-12 text-red-400 mb-4" />
+          <AlertCircle className="h-12 w-12 text-destructive mb-4" />
           <h3 className="text-white font-semibold mb-2">Unable to Embed</h3>
           <p className="text-white/70 text-sm text-center mb-4 max-w-md">
             {error}
@@ -330,7 +330,7 @@ export default function EmbeddedMediaPlayer({
             href={resource.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg font-medium transition-colors"
           >
             <ExternalLink className="h-4 w-4" />
             Open in New Tab
@@ -379,7 +379,7 @@ export default function EmbeddedMediaPlayer({
               href={resource.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg font-medium transition-colors whitespace-nowrap"
+              className="inline-flex items-center gap-2 px-4 py-1.5 bg-primary hover:bg-primary/90 text-primary-foreground text-sm rounded-lg font-medium transition-colors whitespace-nowrap"
             >
               <ExternalLink className="h-4 w-4" />
               Open Original

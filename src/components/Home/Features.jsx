@@ -17,64 +17,64 @@ const Features = () => {
       title: "YouTube Integration",
       description:
         "Auto-import playlists with video titles, durations, and thumbnails using YouTube API.",
-      iconBg: "bg-red-500/10",
-      iconColor: "text-red-600 dark:text-red-400",
+      iconBg: "bg-primary/10",
+      iconColor: "text-primary",
     },
     {
       icon: CheckCircle2,
       title: "Global Progress Tracking",
       description:
         "Mark a resource complete once, it stays marked everywhere. Never lose track of what you have learned.",
-      iconBg: "bg-green-500/10",
-      iconColor: "text-green-600 dark:text-green-400",
+      iconBg: "bg-info/10",
+      iconColor: "text-info",
     },
     {
       icon: Share2,
       title: "Collaborative Plans",
       description:
         "Share study plans with friends via email. Edit together while maintaining individual progress.",
-      iconBg: "bg-blue-500/10",
-      iconColor: "text-blue-600 dark:text-blue-400",
+      iconBg: "bg-primary/10",
+      iconColor: "text-primary",
     },
     {
       icon: RefreshCw,
       title: "Reusable Resources",
       description:
         "Already watched a video? Add it to a new plan and it is automatically marked as complete.",
-      iconBg: "bg-purple-500/10",
-      iconColor: "text-purple-600 dark:text-purple-400",
+      iconBg: "bg-info/10",
+      iconColor: "text-info",
     },
     {
       icon: Clock,
       title: "Smart Time Estimates",
       description:
         "Automatic calculation of total study time. Plan your learning schedule effectively.",
-      iconBg: "bg-orange-500/10",
-      iconColor: "text-orange-600 dark:text-orange-400",
+      iconBg: "bg-primary/10",
+      iconColor: "text-primary",
     },
     {
       icon: FileText,
       title: "Multi-Format Support",
       description:
         "Organize YouTube videos, PDFs, slides, and articles all in one centralized location.",
-      iconBg: "bg-cyan-500/10",
-      iconColor: "text-cyan-600 dark:text-cyan-400",
+      iconBg: "bg-info/10",
+      iconColor: "text-info",
     },
     {
       icon: Users,
       title: "Public & Private",
       description:
         "Keep plans private or share publicly. Clone others' plans to kickstart your learning.",
-      iconBg: "bg-pink-500/10",
-      iconColor: "text-pink-600 dark:text-pink-400",
+      iconBg: "bg-primary/10",
+      iconColor: "text-primary",
     },
     {
       icon: Globe,
       title: "Course-Based Organization",
       description:
         "Tag plans with course codes (CSE110, EEE220, etc.) for easy filtering and discovery.",
-      iconBg: "bg-primary/10",
-      iconColor: "text-primary",
+      iconBg: "bg-info/10",
+      iconColor: "text-info",
     },
   ];
 
