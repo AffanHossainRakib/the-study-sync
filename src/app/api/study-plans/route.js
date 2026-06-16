@@ -16,6 +16,7 @@ export async function GET(request) {
     const view = searchParams.get("view") || "public";
     const search = searchParams.get("search");
     const courseCode = searchParams.get("courseCode");
+    const duration = searchParams.get("duration");
     const sort = searchParams.get("sort") || "newest";
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "9");
@@ -62,6 +63,27 @@ export async function GET(request) {
 
     if (courseCode) {
       query.courseCode = { $regex: courseCode, $options: "i" };
+    }
+
+    // Filter by plan length, derived from the number of resources in the plan.
+    // short: 1-5 resources, medium: 6-15, long: 16+
+    if (duration && duration !== "all") {
+      const sizeExpr = { $size: { $ifNull: ["$resourceIds", []] } };
+      let durationExpr = null;
+      if (duration === "short") {
+        durationExpr = { $lte: [sizeExpr, 5] };
+      } else if (duration === "medium") {
+        durationExpr = {
+          $and: [{ $gte: [sizeExpr, 6] }, { $lte: [sizeExpr, 15] }],
+        };
+      } else if (duration === "long") {
+        durationExpr = { $gte: [sizeExpr, 16] };
+      }
+
+      if (durationExpr) {
+        query.$and = query.$and || [];
+        query.$and.push({ $expr: durationExpr });
+      }
     }
 
     let sortOption = {};

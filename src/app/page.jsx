@@ -73,10 +73,10 @@ export default function Home() {
       <Hero />
       <HowItWorks />
       <Features />
-      {/* <Testimonials /> */}
       <Suspense fallback={<div className="py-12 sm:py-20 lg:py-24" />}>
         <PopularPlans />
       </Suspense>
+      <Testimonials />
       <ScrollToTop />
     </>
   );

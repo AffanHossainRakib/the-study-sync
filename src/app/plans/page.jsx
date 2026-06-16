@@ -20,6 +20,7 @@ export default function AllPlansPage() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [courseFilter, setCourseFilter] = useState("");
+  const [durationFilter, setDurationFilter] = useState("all");
   const [sortBy, setSortBy] = useState("newest");
   const [page, setPage] = useState(1);
   const [pagination, setPagination] = useState(null);
@@ -32,7 +33,7 @@ export default function AllPlansPage() {
     }, 500);
 
     return () => clearTimeout(timer);
-  }, [searchTerm, courseFilter, sortBy]);
+  }, [searchTerm, courseFilter, durationFilter, sortBy]);
 
   // Handle page change
   const handlePageChange = (newPage) => {
@@ -51,6 +52,7 @@ export default function AllPlansPage() {
         limit: 9,
         search: searchTerm,
         courseCode: courseFilter,
+        duration: durationFilter,
       };
       const data = await getStudyPlans(params, token);
       setPlans(data.plans || []);
@@ -78,7 +80,7 @@ export default function AllPlansPage() {
 
         {/* Filters */}
         <div className="bg-card border border-border rounded-2xl p-6 mb-8 shadow-sm">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Search */}
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -103,10 +105,24 @@ export default function AllPlansPage() {
               />
             </div>
 
+            {/* Duration / length filter */}
+            <select
+              value={durationFilter}
+              onChange={(e) => setDurationFilter(e.target.value)}
+              aria-label="Filter by plan length"
+              className="w-full px-4 py-2 border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
+            >
+              <option value="all">Any length</option>
+              <option value="short">Short (1-5 resources)</option>
+              <option value="medium">Medium (6-15 resources)</option>
+              <option value="long">Long (16+ resources)</option>
+            </select>
+
             {/* Sort */}
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
+              aria-label="Sort plans"
               className="w-full px-4 py-2 border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
             >
               <option value="newest">Newest First</option>
@@ -152,7 +168,7 @@ export default function AllPlansPage() {
               No study plans found
             </h3>
             <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-              {searchTerm || courseFilter
+              {searchTerm || courseFilter || durationFilter !== "all"
                 ? "Try adjusting your filters"
                 : "Be the first to create a study plan!"}
             </p>

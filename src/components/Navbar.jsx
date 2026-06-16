@@ -13,11 +13,13 @@ import {
   LayoutDashboard,
   FolderOpen,
   Play,
+  Plus,
   Star,
   Monitor,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import Logo from "./Logo/Logo";
+import ProfileMenu from "./ProfileMenu";
 
 const Navbar = () => {
   const { user, loading, logOut } = useAuth();
@@ -43,18 +45,28 @@ const Navbar = () => {
     }
   };
 
-  // Navigation links for center section
+  // Navigation links for center section (logged out)
   const centerLinks = [
     { href: "/#how-it-works", label: "How It Works" },
     { href: "/#features", label: "Features" },
     { href: "/#popular-plans", label: "Popular Plans" },
     { href: "/plans", label: "Public Plans" },
     { href: "/lab-finder", label: "Lab Finder" },
+    { href: "/about", label: "About" },
+  ];
+
+  // Center navigation links (logged in)
+  const userCenterLinks = [
+    { href: "/dashboard", label: "Dashboard" },
+    { href: "/plans", label: "Explore" },
+    { href: "/instances", label: "My Instances" },
+    { href: "/lab-finder", label: "Lab Finder" },
   ];
 
   // Mobile-only user navigation links
   const mobileUserLinks = [
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+    { href: "/create-plan", label: "Create Plan", icon: Plus },
     { href: "/instances", label: "My Instances", icon: Play },
     { href: "/my-plans", label: "My Plans", icon: FolderOpen },
     { href: "/plans", label: "Public Plans", icon: GraduationCap },
@@ -80,9 +92,9 @@ const Navbar = () => {
           <Logo />
 
           {/* Center Navigation - Desktop */}
-          {!user && (
+          {!loading && (
             <div className="hidden lg:flex lg:items-center lg:gap-1 lg:flex-1 lg:justify-center lg:px-8">
-              {centerLinks.map((link) => (
+              {(user ? userCenterLinks : centerLinks).map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
@@ -101,7 +113,7 @@ const Navbar = () => {
             </div>
           )}
 
-          {/* Right Side - Auth Buttons - Desktop */}
+          {/* Right Side - Auth Buttons / Profile - Desktop */}
           <div className="hidden lg:flex items-center gap-3">
             {!loading && !user && (
               <>
@@ -120,6 +132,7 @@ const Navbar = () => {
               </>
             )}
             <ThemeToggle />
+            {!loading && user && <ProfileMenu />}
           </div>
 
           {/* Mobile Menu Button */}

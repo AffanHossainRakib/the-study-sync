@@ -38,6 +38,7 @@ const Footer = () => {
         { label: "How It Works", href: "/#how-it-works" },
         { label: "Public Plans", href: "/plans" },
         { label: "Create Plan", href: "/create-plan" },
+        { label: "About", href: "/about" },
       ],
     },
     more: {

@@ -153,6 +153,35 @@ npm run dev
 
 Navigate to [http://localhost:3000](http://localhost:3000)
 
+## 🗺️ Route Summary
+
+### Public routes
+
+| Route             | Description                                                        |
+| ----------------- | ------------------------------------------------------------------ |
+| `/`               | Landing page — hero, how it works, features, popular plans, reviews |
+| `/about`          | About page — mission, what makes it different, and how it works     |
+| `/plans`          | Browse all public study plans with search, course & length filters  |
+| `/plans/[id]`     | Study plan details — resources, specs, time estimates, related info |
+| `/lab-finder`     | Lab/course finder utility                                           |
+| `/login`          | Email/password and Google sign-in                                  |
+| `/register`       | Create a new account                                               |
+| `/forget-password`| Password reset flow                                                |
+
+### Protected routes (require sign-in, otherwise redirect to `/login`)
+
+| Route             | Description                                                |
+| ----------------- | ---------------------------------------------------------- |
+| `/dashboard`      | Personal dashboard with progress overview                  |
+| `/create-plan`    | Create a new study plan (add resources)                    |
+| `/my-plans`       | Manage your plans — list with view, edit, and delete       |
+| `/plans/[id]/edit`| Edit an existing study plan                                |
+| `/instances`      | Your active study instances and progress                   |
+| `/instances/[id]` | A single running instance with resource tracking           |
+| `/profile`        | Account and notification settings                          |
+| `/reviews`        | Submit a review                                            |
+| `/admin/reviews`  | Admin-only review moderation                               |
+
 ## 📁 Project Structure
 
 ```

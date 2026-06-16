@@ -1,5 +1,5 @@
-@import "tailwindcss";
-@import "tw-animate-css";
+/* HeroUI v3 brings in tailwindcss + tw-animate-css (do not re-import them). */
+@import "@heroui/styles";
 
 @custom-variant dark (&:is(.dark *));
 
