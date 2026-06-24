@@ -1,81 +1,129 @@
-import { DAY_MAP, type Day, type Time } from "./lab-constants";
-import type { LabScheduleEntry, LabAvailabilityResult } from "./lab-types";
+import { DAY_MAP } from "./lab-constants";
+import type { LabSlot, LabRoomData } from "./lab-types";
 
-export function parseLabSchedule(data: LabScheduleEntry[]) {
-  const uniqueLabs = new Set<string>();
-  const busyLabsMap = new Map<string, Set<string>>();
+/**
+ * Converts a time string (e.g. "08:30", "08:00 AM", "14:30") to minutes since midnight.
+ */
+export function parseTimeToMinutes(timeStr: string): number {
+  // Matches "HH:MM" or "H:MM" (24-hour style, e.g. "08:30", "14:45")
+  let match = timeStr.match(/^(\d{1,2}):(\d{2})$/);
+  if (match) {
+    return parseInt(match[1], 10) * 60 + parseInt(match[2], 10);
+  }
 
-  data.forEach((entry) => {
-    uniqueLabs.add(entry["Lab Room"]);
-    const key = `${entry["Lab Day"]}-${entry["Lab Time (3hr)"]}`;
+  // Matches "HH:MM AM/PM" or "H:MM AM/PM" (12-hour style, e.g. "08:00 AM", "2:30 PM")
+  match = timeStr.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+  if (match) {
+    let hours = parseInt(match[1], 10);
+    const minutes = parseInt(match[2], 10);
+    const ampm = match[3].toUpperCase();
+    if (ampm === "PM" && hours !== 12) hours += 12;
+    if (ampm === "AM" && hours === 12) hours = 0;
+    return hours * 60 + minutes;
+  }
 
-    if (!busyLabsMap.has(key)) {
-      busyLabsMap.set(key, new Set());
+  return 0;
+}
+
+/**
+ * Formats minutes since midnight back into a 12-hour display string (e.g., 630 -> "10:30 AM")
+ */
+export function formatMinutesToTime(minutes: number): string {
+  const hours24 = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  const ampm = hours24 >= 12 ? "PM" : "AM";
+  const hours12 = hours24 % 12 === 0 ? 12 : hours24 % 12;
+  return `${hours12}:${mins.toString().padStart(2, "0")} ${ampm}`;
+}
+
+export interface LabRoomStatus {
+  isOccupied: boolean;
+  currentClass?: LabSlot;
+  nextClass?: LabSlot;
+  freeUntil?: string; // e.g. "11:00"
+  occupiedUntil?: string; // e.g. "12:20"
+  nextFreeTime?: string; // e.g. "3:20 PM" when consecutive classes end
+}
+
+/**
+ * Computes the real-time status of a lab room at a given day and time (in minutes).
+ */
+export function getLabRoomStatus(
+  lab: LabRoomData,
+  day: string,
+  timeMinutes: number
+): LabRoomStatus {
+  const schedulesOnDay = lab.schedules.filter((s) => s.day === day);
+
+  // 1. Check if currently occupied
+  for (const slot of schedulesOnDay) {
+    const startMins = parseTimeToMinutes(slot.startTime);
+    const endMins = parseTimeToMinutes(slot.endTime);
+
+    if (timeMinutes >= startMins && timeMinutes < endMins) {
+      // Find the end time of consecutive classes back-to-back (threshold <= 20 minutes gap)
+      let currentEnd = endMins;
+      let foundNext = true;
+      while (foundNext) {
+        const nextSlot = schedulesOnDay.find((s) => {
+          const sStart = parseTimeToMinutes(s.startTime);
+          // Check if it starts exactly as the current one ends, or within a 20-minute transition gap
+          return sStart >= currentEnd - 5 && sStart <= currentEnd + 20;
+        });
+        if (nextSlot) {
+          currentEnd = parseTimeToMinutes(nextSlot.endTime);
+        } else {
+          foundNext = false;
+        }
+      }
+
+      return {
+        isOccupied: true,
+        currentClass: slot,
+        occupiedUntil: slot.endTime,
+        nextFreeTime: formatMinutesToTime(currentEnd),
+      };
     }
-    busyLabsMap.get(key)!.add(entry["Lab Room"]);
+  }
+
+  // 2. Otherwise it is free. Find the next class on the same day.
+  let nextClass: LabSlot | undefined;
+  let minDiff = Infinity;
+
+  schedulesOnDay.forEach((slot) => {
+    const startMins = parseTimeToMinutes(slot.startTime);
+    const diff = startMins - timeMinutes;
+    if (diff > 0 && diff < minDiff) {
+      minDiff = diff;
+      nextClass = slot;
+    }
   });
 
-  return { uniqueLabs, busyLabsMap };
+  return {
+    isOccupied: false,
+    nextClass,
+    freeUntil: nextClass ? (nextClass as LabSlot).startTime : undefined,
+  };
 }
 
-export function findFreeLabs(
-  day: Day,
-  time: Time,
-  uniqueLabs: Set<string>,
-  busyLabsMap: Map<string, Set<string>>
-): string[] {
-  const key = `${day}-${time}`;
-  const busyLabs = busyLabsMap.get(key) || new Set();
-  return Array.from(uniqueLabs).filter((lab) => !busyLabs.has(lab)).sort();
-}
-
-export function getCurrentTimeSlot(): {
-  day: Day | "FRI";
-  time: Time | null;
+/**
+ * Gets current day code and time details relative to the user's system time.
+ */
+export function getCurrentTimeInfo(): {
+  day: string;
+  timeString: string;
+  timeMinutes: number;
 } {
   const now = new Date();
-  const day = DAY_MAP[now.getDay()];
-  const hour = now.getHours() + now.getMinutes() / 60;
+  const day = DAY_MAP[now.getDay()] || "FRI";
+  const hour = now.getHours();
+  const minute = now.getMinutes();
 
-  let time: Time | null = null;
+  const ampm = hour >= 12 ? "PM" : "AM";
+  const displayHour = hour % 12 === 0 ? 12 : hour % 12;
+  const displayMinute = minute.toString().padStart(2, "0");
+  const timeString = `${displayHour}:${displayMinute} ${ampm}`;
+  const timeMinutes = hour * 60 + minute;
 
-  if (hour >= 8 && hour < 11) {
-    time = "8:00 AM";
-  } else if (hour >= 11 && hour < 14) {
-    time = "11:00 AM";
-  } else if (hour >= 14 && hour < 17) {
-    time = "2:00 PM";
-  }
-
-  return { day, time };
-}
-
-export function checkCurrentAvailability(
-  uniqueLabs: Set<string>,
-  busyLabsMap: Map<string, Set<string>>
-): LabAvailabilityResult {
-  const { day, time } = getCurrentTimeSlot();
-
-  if (day === "FRI") {
-    return {
-      availableLabs: [],
-      isLabsClosed: true,
-      message: "Labs are closed on Friday",
-    };
-  }
-
-  if (!time) {
-    return {
-      availableLabs: [],
-      isLabsClosed: true,
-      message: "Labs are currently closed",
-    };
-  }
-
-  const availableLabs = findFreeLabs(day, time, uniqueLabs, busyLabsMap);
-
-  return {
-    availableLabs,
-    isLabsClosed: false,
-  };
+  return { day, timeString, timeMinutes };
 }

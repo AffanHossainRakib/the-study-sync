@@ -8,19 +8,16 @@ export const metadata = {
 
 export default function LabFinderPage() {
   return (
-    <div className="min-h-screen">
-      <section className="pt-24 pb-8 px-4 text-center">
-        <h1 className="text-3xl sm:text-4xl font-bold text-foreground">
+    <div className="min-h-screen animate-fade-in">
+      <section className="pt-8 pb-2 px-4 text-center sm:pt-14 sm:pb-4">
+        <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground">
           Lab Finder
         </h1>
-        <p className="mt-2 text-muted-foreground max-w-md mx-auto">
-          Find an empty CSE lab room at BRAC University instantly
-        </p>
-        <p className="mt-1 text-sm text-muted-foreground/70">
-          Last update: Spring 2026
+        <p className="mt-0.5 text-[11px] sm:text-xs text-muted-foreground max-w-md mx-auto">
+          Find available CSE lab rooms instantly
         </p>
       </section>
-      <div className="px-4 pb-16">
+      <div className="px-4 pb-12">
         <LabFinder />
       </div>
     </div>

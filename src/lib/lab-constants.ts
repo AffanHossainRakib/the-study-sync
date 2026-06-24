@@ -1,5 +1,13 @@
 export const DAYS = ["SAT", "SUN", "MON", "TUE", "WED", "THU"] as const;
-export const TIMES = ["8:00 AM", "11:00 AM", "2:00 PM"] as const;
+export const TIMES = [
+  "08:00 AM",
+  "09:30 AM",
+  "11:00 AM",
+  "12:30 PM",
+  "02:00 PM",
+  "03:30 PM",
+  "05:00 PM",
+] as const;
 
 export type Day = (typeof DAYS)[number];
 export type Time = (typeof TIMES)[number];
@@ -22,3 +30,7 @@ export const DAY_MAP: Record<number, Day | "FRI"> = {
   5: "FRI",
   6: "SAT",
 };
+
+export const LAB_TAGS = ["All", "CSE", "EEE/ECE", "Biotech/Micro", "Architecture", "Others"] as const;
+export type LabTag = (typeof LAB_TAGS)[number];
+
