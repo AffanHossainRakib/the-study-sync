@@ -133,6 +133,13 @@ function getTagClass(tag: string): string {
   }
 }
 
+function getRoomDisplayName(roomName: string): string {
+  if (roomName === "10G-33L" || roomName === "10G-34L") {
+    return `${roomName} (ST Room)`;
+  }
+  return roomName;
+}
+
 export function LabFinder() {
   const [labs, setLabs] = useState<LabRoomData[]>([]);
   const [metadata, setMetadata] = useState<LabMetadata | null>(null);
@@ -178,7 +185,38 @@ export function LabFinder() {
         throw new Error("Failed to load schedules");
       }
       const data: LabsAPIResponse = await response.json();
-      setLabs(data.labs);
+      const has33 = data.labs.some((lab) => lab.roomName === "10G-33L");
+      const has34 = data.labs.some((lab) => lab.roomName === "10G-34L");
+
+      let updatedLabs = data.labs.map((lab) => {
+        const isStLab = lab.roomName === "10G-33L" || lab.roomName === "10G-34L";
+        if (isStLab) {
+          return {
+            ...lab,
+            tags: ["CSE"],
+            schedules: [],
+          };
+        }
+        return lab;
+      });
+
+      if (!has33) {
+        updatedLabs.push({
+          roomName: "10G-33L",
+          tags: ["CSE"],
+          schedules: [],
+        });
+      }
+
+      if (!has34) {
+        updatedLabs.push({
+          roomName: "10G-34L",
+          tags: ["CSE"],
+          schedules: [],
+        });
+      }
+
+      setLabs(updatedLabs);
       setMetadata(data.metadata);
     } catch {
       setError(
@@ -237,26 +275,51 @@ export function LabFinder() {
           return false;
         }
         // Search query filter
-        if (
-          searchQuery &&
-          !lab.roomName.toLowerCase().includes(searchQuery.toLowerCase())
-        ) {
-          return false;
+        if (searchQuery) {
+          const query = searchQuery.toLowerCase().trim();
+          const normalizedQuery = query.replace(/[\s-]/g, "");
+          
+          const matchesOriginal = lab.roomName.toLowerCase().replace(/[\s-]/g, "").includes(normalizedQuery);
+          const displayName = getRoomDisplayName(lab.roomName).toLowerCase().replace(/[\s-]/g, "");
+          const matchesDisplay = displayName.includes(normalizedQuery);
+          
+          let matchesCourses = false;
+          if (lab.roomName === "10G-33L") {
+            matchesCourses = "cse110,cse111,cse230,studenttutor,tutoring,stroom".includes(normalizedQuery);
+          } else if (lab.roomName === "10G-34L") {
+            matchesCourses = "cse220,cse221,cse250,cse251,cse260,studenttutor,tutoring,stroom".includes(normalizedQuery);
+          }
+
+          if (!matchesOriginal && !matchesDisplay && !matchesCourses) {
+            return false;
+          }
         }
         return true;
       })
       .map((lab) => {
-        const status = getLabRoomStatus(
-          lab,
-          targetTimeData.day,
-          targetTimeData.timeMinutes,
-        );
+        const isStLab = lab.roomName === "10G-33L" || lab.roomName === "10G-34L";
+        
+        const status = isStLab
+          ? { isOccupied: false }
+          : getLabRoomStatus(
+              lab,
+              targetTimeData.day,
+              targetTimeData.timeMinutes,
+            );
 
         let subtitle = "";
         let durationStr = "";
         let freeMins = 0;
 
-        if (status.isOccupied && status.currentClass) {
+        if (isStLab) {
+          if (lab.roomName === "10G-33L") {
+            subtitle = "CSE110, CSE111, CSE230";
+          } else {
+            subtitle = "CSE220, CSE221, CSE250, CSE251, CSE260";
+          }
+          durationStr = "Open for Tutoring";
+          freeMins = 1440;
+        } else if (status.isOccupied && status.currentClass) {
           subtitle = `${status.currentClass.courseCode} (Sec ${status.currentClass.sectionName})`;
           if (status.nextFreeTime) {
             if (targetTimeData.isActualToday && isLiveMode) {
@@ -304,6 +367,7 @@ export function LabFinder() {
 
         return {
           ...lab,
+          schedules: isStLab ? [] : lab.schedules,
           status,
           subtitle,
           durationStr,
@@ -324,25 +388,36 @@ export function LabFinder() {
 
     // 3. Sort according to selection
     return filtered.sort((a, b) => {
+      // Pinning: If one of them is ST Room, pin it to the top!
+      const isStA = a.roomName === "10G-33L" || a.roomName === "10G-34L";
+      const isStB = b.roomName === "10G-33L" || b.roomName === "10G-34L";
+      if (isStA && !isStB) return -1;
+      if (!isStA && isStB) return 1;
+      if (isStA && isStB) {
+        return a.roomName.localeCompare(b.roomName);
+      }
+
+      const nameA = getRoomDisplayName(a.roomName);
+      const nameB = getRoomDisplayName(b.roomName);
       if (sortBy === "FreeMinsDesc") {
         const diff = b.freeMins - a.freeMins;
         if (diff !== 0) return diff;
-        return a.roomName.localeCompare(b.roomName);
+        return nameA.localeCompare(nameB);
       }
       if (sortBy === "AvailableFirst") {
         if (a.status.isOccupied !== b.status.isOccupied) {
           return a.status.isOccupied ? 1 : -1;
         }
-        return a.roomName.localeCompare(b.roomName);
+        return nameA.localeCompare(nameB);
       }
       if (sortBy === "BusyFirst") {
         if (a.status.isOccupied !== b.status.isOccupied) {
           return a.status.isOccupied ? -1 : 1;
         }
-        return a.roomName.localeCompare(b.roomName);
+        return nameA.localeCompare(nameB);
       }
       // Default / "Name": Alphabetical
-      return a.roomName.localeCompare(b.roomName);
+      return nameA.localeCompare(nameB);
     });
   }, [
     labs,
@@ -366,11 +441,24 @@ export function LabFinder() {
     };
 
     labs.forEach((lab) => {
-      if (
-        searchQuery &&
-        !lab.roomName.toLowerCase().includes(searchQuery.toLowerCase())
-      ) {
-        return;
+      if (searchQuery) {
+        const query = searchQuery.toLowerCase().trim();
+        const normalizedQuery = query.replace(/[\s-]/g, "");
+        
+        const matchesOriginal = lab.roomName.toLowerCase().replace(/[\s-]/g, "").includes(normalizedQuery);
+        const displayName = getRoomDisplayName(lab.roomName).toLowerCase().replace(/[\s-]/g, "");
+        const matchesDisplay = displayName.includes(normalizedQuery);
+        
+        let matchesCourses = false;
+        if (lab.roomName === "10G-33L") {
+          matchesCourses = "cse110,cse111,cse230,studenttutor,tutoring,stroom".includes(normalizedQuery);
+        } else if (lab.roomName === "10G-34L") {
+          matchesCourses = "cse220,cse221,cse250,cse251,cse260,studenttutor,tutoring,stroom".includes(normalizedQuery);
+        }
+
+        if (!matchesOriginal && !matchesDisplay && !matchesCourses) {
+          return;
+        }
       }
       counts.All++;
       lab.tags.forEach((tag) => {
@@ -796,7 +884,7 @@ export function LabFinder() {
                         <div className="flex items-center gap-1.5">
                           <MapPin className="h-4 w-4 text-muted-foreground shrink-0" />
                           <h4 className="text-lg sm:text-xl font-bold text-foreground truncate">
-                            {lab.roomName}
+                            {getRoomDisplayName(lab.roomName)}
                           </h4>
                         </div>
                         {/* Display list of tags */}
@@ -924,7 +1012,9 @@ export function LabFinder() {
                   <div className="flex items-center gap-1.5">
                     <MapPin className="h-5 w-5 text-primary shrink-0" />
                     <h3 className="text-lg sm:text-xl font-bold text-foreground">
-                      Lab {modalRoom.roomName}
+                      {modalRoom.roomName === "10G-33L" || modalRoom.roomName === "10G-34L"
+                        ? getRoomDisplayName(modalRoom.roomName)
+                        : `Lab ${modalRoom.roomName}`}
                     </h3>
                   </div>
                   <div className="flex gap-1">
