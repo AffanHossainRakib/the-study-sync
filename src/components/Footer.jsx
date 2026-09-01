@@ -44,7 +44,6 @@ const Footer = () => {
     more: {
       title: "More from us",
       links: [
-        { label: "Lab Buddy", href: "https://bracu-lab-buddy.pages.dev/" },
         { label: "RoutineBuzz", href: "https://routinebuzz.vercel.app/" },
       ],
     },
@@ -188,6 +187,30 @@ const Footer = () => {
           <p className="text-xs sm:text-sm text-muted-foreground text-center sm:text-left">
             © {new Date().getFullYear()} The Study Sync. All rights reserved.
           </p>
+
+          <div className="flex items-center gap-4 sm:gap-6 text-xs sm:text-sm text-muted-foreground">
+            <a
+              href="https://github.com/AffanHossainRakib/the-study-sync"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 hover:text-primary transition-colors"
+            >
+              <Github className="h-4 w-4" />
+              Contribute
+            </a>
+            <span>
+              Made by{" "}
+              <a
+                href="https://www.itsaffan.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium hover:text-primary transition-colors"
+              >
+                Affan
+              </a>
+            </span>
+          </div>
+
           {/* <div className="flex items-center gap-4 sm:gap-6 text-xs sm:text-sm text-muted-foreground">
             <Link href="#" className="hover:text-primary transition-colors">
               Privacy
